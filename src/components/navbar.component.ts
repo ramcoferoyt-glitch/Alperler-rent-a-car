@@ -14,11 +14,9 @@ import { CarService } from '../services/car.service';
         <div class="flex justify-between items-center h-24">
           <!-- Logo -->
           <div class="flex-shrink-0 flex items-center cursor-pointer group" routerLink="/">
-            <!-- Logo Icon -->
             <div class="w-12 h-12 bg-amber-500 rounded-sm flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(245,158,11,0.3)] group-hover:bg-white transition-all duration-500">
               <span class="text-slate-900 font-serif text-3xl italic font-bold group-hover:text-amber-500 transition-colors">A</span>
             </div>
-            <!-- Logo Text -->
             <div class="flex flex-col justify-center">
               <span class="font-serif font-bold text-2xl text-white tracking-tight leading-none group-hover:text-amber-500 transition-colors">ALPERLER</span>
               <span class="text-[0.6rem] text-slate-400 font-bold tracking-[0.35em] uppercase mt-1 text-justify w-full">Rent A Car</span>
@@ -39,15 +37,16 @@ import { CarService } from '../services/car.service';
 
           <!-- Right Side Icons -->
           <div class="hidden md:flex items-center space-x-4">
+             
              <!-- Fav Icon -->
-             <div class="relative group cursor-pointer">
+             <div class="relative group cursor-pointer p-2">
                 <svg class="w-6 h-6 text-slate-300 group-hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                 @if (favCount() > 0) {
-                  <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{{ favCount() }}</span>
+                  <span class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{{ favCount() }}</span>
                 }
              </div>
 
-             <a routerLink="/fleet" class="bg-white hover:bg-amber-500 text-slate-900 px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-lg border border-transparent hover:border-amber-600 hover:shadow-amber-500/20">
+             <a routerLink="/fleet" class="bg-white hover:bg-amber-500 text-slate-900 px-6 py-3 rounded-sm font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-lg border border-transparent hover:border-amber-600 hover:shadow-amber-500/20 ml-2">
               Rezervasyon
             </a>
           </div>

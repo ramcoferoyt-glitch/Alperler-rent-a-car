@@ -1,5 +1,7 @@
 
-import { Routes } from '@angular/router';
+import { Routes, CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService } from './services/auth.service';
 import { HomeComponent } from './pages/home.component';
 import { FleetComponent } from './pages/fleet.component';
 import { SalesComponent } from './pages/sales.component';
@@ -9,6 +11,24 @@ import { BlogDetailComponent } from './pages/blog-detail.component';
 import { BlogListComponent } from './pages/blog-list.component';
 import { FaqComponent } from './pages/faq.component';
 import { LegalComponent } from './pages/legal.component';
+
+// Admin Pages
+import { AdminLoginComponent } from './pages/admin/admin-login.component';
+import { AdminLayoutComponent } from './pages/admin/admin-layout.component';
+import { AdminDashboardComponent } from './pages/admin/admin-dashboard.component';
+import { AdminCarsComponent } from './pages/admin/admin-cars.component';
+import { AdminReservationsComponent } from './pages/admin/admin-reservations.component';
+import { AdminBlogComponent } from './pages/admin/admin-blog.component';
+import { AdminSettingsComponent } from './pages/admin/admin-settings.component';
+
+const adminGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  if (auth.isLoggedIn()) {
+    return true;
+  }
+  return router.parseUrl('/admin/login');
+};
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,5 +42,23 @@ export const routes: Routes = [
   { path: 'legal/kvkk', component: LegalComponent, data: { type: 'kvkk', title: 'KVKK Aydınlatma Metni' } },
   { path: 'legal/privacy', component: LegalComponent, data: { type: 'privacy', title: 'Gizlilik Politikası' } },
   { path: 'legal/cookies', component: LegalComponent, data: { type: 'cookies', title: 'Çerez Politikası' } },
+  
+  // Admin Routes
+  { path: 'admin/login', component: AdminLoginComponent },
+  { 
+    path: 'admin', 
+    component: AdminLayoutComponent,
+    canActivate: [adminGuard],
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'cars', component: AdminCarsComponent },
+      { path: 'reservations', component: AdminReservationsComponent },
+      { path: 'sales', component: AdminCarsComponent }, // Reusing cars component with tab logic
+      { path: 'blog', component: AdminBlogComponent },
+      { path: 'settings', component: AdminSettingsComponent }
+    ]
+  },
+  
   { path: '**', redirectTo: '' }
 ];

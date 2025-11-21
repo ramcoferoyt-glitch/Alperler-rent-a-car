@@ -150,7 +150,7 @@ import { CarService, BookingRequest } from '../services/car.service';
                                            </div>
                                        } @else if (paymentMethod() === 'EFT') {
                                            <div class="space-y-3 text-sm text-slate-700 animate-fade-in">
-                                               <p class="font-bold text-amber-600">Alperler Rent A Car Ltd. Şti.</p>
+                                               <p class="font-bold text-amber-600">{{ config().companyName }}</p>
                                                <div class="bg-white p-3 rounded border">
                                                    <span class="block text-xs text-slate-400">Ziraat Bankası</span>
                                                    <span class="font-mono font-bold">TR12 0001 0002 0003 0004 0005 67</span>
@@ -178,39 +178,49 @@ import { CarService, BookingRequest } from '../services/car.service';
           } @else {
               
               <!-- STANDARD CONTACT PAGE (No Booking) -->
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-                 <div class="lg:col-span-1">
-                    <div class="bg-slate-900 text-white p-8 rounded-sm shadow-lg h-full">
-                       <h3 class="font-serif text-xl font-bold mb-6 text-amber-500">İletişim</h3>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+                 
+                 <!-- Left Column: Info & Map -->
+                 <div class="space-y-8">
+                    <!-- Info Box -->
+                    <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg">
+                       <h3 class="font-serif text-xl font-bold mb-6 text-amber-500">İletişim Bilgileri</h3>
                        <ul class="space-y-6">
                           <li class="flex items-start">
                              <svg class="w-5 h-5 text-amber-500 mr-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                             <span>Hakkari Yüksekova Merkez</span>
+                             <span>{{ config().address }}</span>
                           </li>
                           <li class="flex items-center">
                              <svg class="w-5 h-5 text-amber-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                             <span class="text-lg font-bold">0537 959 48 51</span>
+                             <span class="text-lg font-bold">{{ config().phone }}</span>
+                          </li>
+                          <li class="flex items-center">
+                             <svg class="w-5 h-5 text-amber-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                             <span>{{ config().email }}</span>
                           </li>
                        </ul>
                     </div>
+                    
+                    <!-- Map -->
+                    <div class="bg-white p-2 rounded-xl shadow-lg h-[300px] overflow-hidden border border-slate-200">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50276.81582640637!2d44.26237087249756!3d37.55376989803086!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40081211590d3409%3A0x972e3687221b8b2a!2zWcOca3Nla292YSwgSGFra2FyaQ!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
                  </div>
 
-                 <div class="lg:col-span-2">
-                    <div class="bg-white p-8 shadow-xl rounded-sm border-t-4 border-slate-900">
-                       <h2 class="font-serif text-3xl font-bold text-slate-900 mb-2">Bize Ulaşın</h2>
-                       <p class="text-slate-500 mb-8">Sorularınız için aşağıdaki formu kullanabilirsiniz.</p>
-                       
-                       <!-- Simple Contact Form reuse logic similar to above but simplified -->
-                       <form (submit)="processBooking($event)" class="space-y-6">
-                          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <input type="text" placeholder="Adınız" required [(ngModel)]="formName" name="name" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none">
-                              <input type="text" placeholder="Soyadınız" required [(ngModel)]="formSurname" name="surname" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none">
-                          </div>
-                          <input type="tel" placeholder="Telefon" required [(ngModel)]="formPhone" name="phone" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none">
-                          <textarea rows="4" placeholder="Mesajınız" [(ngModel)]="formMessage" name="message" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none"></textarea>
-                          <button type="submit" class="w-full py-4 bg-slate-900 text-white font-bold uppercase tracking-widest shadow-lg">Gönder</button>
-                       </form>
-                    </div>
+                 <!-- Right Column: Contact Form -->
+                 <div class="bg-white p-8 shadow-xl rounded-xl border-t-4 border-slate-900">
+                    <h2 class="font-serif text-3xl font-bold text-slate-900 mb-2">Bize Ulaşın</h2>
+                    <p class="text-slate-500 mb-8">Sorularınız veya talepleriniz için formu doldurun.</p>
+                    
+                    <form (submit)="processBooking($event)" class="space-y-6">
+                       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <input type="text" placeholder="Adınız" required [(ngModel)]="formName" name="name" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                           <input type="text" placeholder="Soyadınız" required [(ngModel)]="formSurname" name="surname" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                       </div>
+                       <input type="tel" placeholder="Telefon" required [(ngModel)]="formPhone" name="phone" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                       <textarea rows="4" placeholder="Mesajınız" [(ngModel)]="formMessage" name="message" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors"></textarea>
+                       <button type="submit" class="w-full py-4 bg-slate-900 text-white font-bold uppercase tracking-widest shadow-lg hover:bg-amber-500 hover:text-slate-900 transition-colors rounded-sm">Gönder</button>
+                    </form>
                  </div>
               </div>
           }
@@ -220,6 +230,7 @@ import { CarService, BookingRequest } from '../services/car.service';
 })
 export class ContactComponent implements OnInit {
   carService = inject(CarService);
+  config = this.carService.getConfig();
   
   bookingData = signal<BookingRequest | null>(null);
   
@@ -228,7 +239,6 @@ export class ContactComponent implements OnInit {
   formPhone = '';
   formMessage = '';
   
-  // Rental Specifics
   startDate = '';
   endDate = '';
   totalDays = signal(0);
@@ -242,11 +252,8 @@ export class ContactComponent implements OnInit {
     const req = this.carService.getBookingRequest();
     if (req) {
       this.bookingData.set(req);
-      
       if (req.startDate) this.startDate = req.startDate;
       if (req.endDate) this.endDate = req.endDate;
-      
-      // Initial Calc
       this.calculatePrice();
     }
   }
@@ -256,8 +263,6 @@ export class ContactComponent implements OnInit {
     if (req && req.type === 'RENTAL' && this.startDate && this.endDate) {
         const start = new Date(this.startDate);
         const end = new Date(this.endDate);
-        
-        // Basit tarih farkı hesaplama
         const timeDiff = end.getTime() - start.getTime();
         const days = Math.ceil(timeDiff / (1000 * 3600 * 24));
         
@@ -284,15 +289,26 @@ export class ContactComponent implements OnInit {
     this.isSubmitting.set(true);
 
     const req = this.bookingData();
-    
-    // Validation for Rental
-    if (req?.type === 'RENTAL' && this.totalDays() <= 0) {
-        alert('Lütfen geçerli bir tarih aralığı seçiniz.');
-        this.isSubmitting.set(false);
-        return;
-    }
 
-    // Simulating backend processing
+    const finalRequest: BookingRequest = req ? {
+        ...req,
+        customerName: `${this.formName} ${this.formSurname}`,
+        customerPhone: this.formPhone,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        days: this.totalDays(),
+        totalPrice: this.totalPrice() || req.basePrice
+    } : {
+        type: 'SALE_INQUIRY',
+        item: null,
+        itemName: 'İletişim Formu Mesajı',
+        customerName: `${this.formName} ${this.formSurname}`,
+        customerPhone: this.formPhone,
+        basePrice: 0
+    };
+    
+    this.carService.addReservation(finalRequest);
+
     setTimeout(() => {
       this.isSubmitting.set(false);
       if (req?.type === 'RENTAL') {
@@ -301,7 +317,7 @@ export class ContactComponent implements OnInit {
       } else {
           this.successMessage.set(`Talebiniz başarıyla alındı. En kısa sürede ${this.formPhone} üzerinden dönüş yapacağız.`);
       }
-    }, 2000);
+    }, 1500);
   }
 
   resetForm() {
