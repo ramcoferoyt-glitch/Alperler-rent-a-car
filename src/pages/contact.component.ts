@@ -2,6 +2,7 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CarService, BookingRequest } from '../services/car.service';
 
 @Component({
@@ -9,244 +10,302 @@ import { CarService, BookingRequest } from '../services/car.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="min-h-screen bg-slate-50 pt-28 pb-20 font-sans">
-       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <!-- CHECKOUT FLOW (Only if booking exists) -->
-          @if (bookingData()) {
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-                 
-                 <!-- Left: Car Details & Price Summary -->
-                 <div class="lg:col-span-1 space-y-6">
-                    <div class="bg-white border border-amber-500 rounded-xl shadow-2xl overflow-hidden sticky top-32">
-                        <div class="bg-amber-500 text-slate-900 py-4 px-6 font-bold text-sm uppercase tracking-widest flex justify-between items-center">
-                           <span>Rezervasyon Özeti</span>
-                           <button (click)="clearBooking()" class="text-slate-900 hover:bg-white/20 rounded p-1 transition-colors" title="İptal Et">
-                               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                           </button>
-                        </div>
-                        
-                        <div class="relative h-48">
-                           <img [src]="bookingData()?.image" class="w-full h-full object-cover">
-                           <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
-                               <h3 class="text-white font-bold text-xl">{{ bookingData()?.itemName }}</h3>
-                           </div>
-                        </div>
-                        
-                        <div class="p-6 space-y-4">
-                           <!-- Rental Specific: Date Selection & Calculator -->
-                           @if(bookingData()?.type === 'RENTAL') {
-                               <div class="space-y-4">
-                                   <div>
-                                       <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Alış Tarihi</label>
-                                       <input type="date" [(ngModel)]="startDate" (change)="calculatePrice()" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm font-bold focus:ring-2 focus:ring-amber-500 outline-none">
-                                   </div>
-                                   <div>
-                                       <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Dönüş Tarihi</label>
-                                       <input type="date" [(ngModel)]="endDate" (change)="calculatePrice()" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm font-bold focus:ring-2 focus:ring-amber-500 outline-none">
-                                   </div>
+    <div class="font-sans">
+       
+       <!-- ==========================
+            FULL SCREEN CHECKOUT MODE
+            ========================== -->
+       @if (bookingData()) {
+          <div class="fixed inset-0 bg-white z-[100] overflow-y-auto animate-fade-in">
+             
+             <!-- Checkout Header (Fixed) -->
+             <div class="sticky top-0 bg-white/95 backdrop-blur-md border-b border-slate-100 z-10 px-4 py-4 shadow-sm">
+                 <div class="max-w-7xl mx-auto flex justify-between items-center">
+                     <button (click)="clearBooking()" class="flex items-center text-slate-600 hover:text-slate-900 transition-colors font-bold">
+                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                         Vazgeç ve Siteye Dön
+                     </button>
+                     <div class="font-serif font-bold text-xl text-slate-900">
+                        {{ bookingData()?.type === 'RENTAL' ? 'GÜVENLİ ÖDEME & REZERVASYON' : 'TALEP OLUŞTURMA' }}
+                     </div>
+                     <div class="w-20"></div> <!-- Spacer -->
+                 </div>
+             </div>
 
-                                   <div class="bg-slate-50 p-4 rounded border border-slate-100 space-y-2 text-sm">
-                                       <div class="flex justify-between text-slate-600">
-                                           <span>Günlük Fiyat:</span>
-                                           <span>{{ bookingData()?.basePrice | number }} ₺</span>
-                                       </div>
-                                       <div class="flex justify-between text-slate-600">
-                                           <span>Süre:</span>
-                                           <span class="font-bold text-amber-600">{{ totalDays() }} Gün</span>
-                                       </div>
-                                       <div class="border-t border-slate-200 pt-2 mt-2 flex justify-between items-center">
-                                           <span class="font-bold text-slate-900 text-lg">TOPLAM:</span>
-                                           <span class="font-bold text-slate-900 text-2xl">{{ totalPrice() | number }} ₺</span>
-                                       </div>
+             <div class="max-w-7xl mx-auto px-4 py-12">
+                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                     
+                     <!-- LEFT: SUMMARY -->
+                     <div class="lg:col-span-4 order-2 lg:order-1">
+                        <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 sticky top-28">
+                           <h3 class="font-bold text-slate-900 text-lg mb-4 pb-4 border-b border-slate-200">Sipariş Özeti</h3>
+                           
+                           <div class="aspect-video rounded-lg overflow-hidden bg-white mb-4 border border-slate-200">
+                               <img [src]="bookingData()?.image" class="w-full h-full object-cover">
+                           </div>
+                           
+                           <h4 class="text-xl font-serif font-bold text-slate-900 mb-1">{{ bookingData()?.itemName }}</h4>
+                           <p class="text-slate-500 text-sm mb-6">{{ bookingData()?.type === 'RENTAL' ? 'Kiralama Hizmeti' : (bookingData()?.type === 'TOUR' ? 'Tur Hizmeti' : 'Satın Alma Talebi') }}</p>
+
+                           @if(bookingData()?.type === 'RENTAL') {
+                               <div class="space-y-3 mb-6">
+                                   <div>
+                                       <label class="text-xs font-bold text-slate-500 uppercase">Alış Tarihi</label>
+                                       <input type="date" [(ngModel)]="startDate" (change)="calculatePrice()" class="w-full bg-white border border-slate-200 rounded p-2 text-sm font-bold focus:ring-2 focus:ring-amber-500 outline-none">
                                    </div>
+                                   <div>
+                                       <label class="text-xs font-bold text-slate-500 uppercase">Dönüş Tarihi</label>
+                                       <input type="date" [(ngModel)]="endDate" (change)="calculatePrice()" class="w-full bg-white border border-slate-200 rounded p-2 text-sm font-bold focus:ring-2 focus:ring-amber-500 outline-none">
+                                   </div>
+                               </div>
+                               
+                               <div class="flex justify-between items-center text-sm text-slate-600 mb-2">
+                                   <span>Günlük Fiyat</span>
+                                   <span>{{ bookingData()?.basePrice | number }} ₺</span>
+                               </div>
+                               <div class="flex justify-between items-center text-sm text-slate-600 mb-4">
+                                   <span>Süre</span>
+                                   <span class="font-bold">{{ totalDays() }} Gün</span>
+                               </div>
+                               <div class="border-t border-slate-200 pt-4 flex justify-between items-center">
+                                   <span class="font-bold text-lg text-slate-900">Toplam Tutar</span>
+                                   <span class="font-bold text-2xl text-amber-600">{{ totalPrice() | number }} ₺</span>
                                </div>
                            } @else {
-                               <!-- Sale or Tour Price -->
-                               <div class="flex justify-between items-center border-t border-slate-100 pt-4">
-                                  <span class="text-xs uppercase font-bold text-slate-500">Tahmini Tutar</span>
-                                  <div class="text-xl font-bold text-slate-900">{{ bookingData()?.basePrice | number }} ₺</div>
+                                <div class="border-t border-slate-200 pt-4 flex justify-between items-center">
+                                   <span class="font-bold text-lg text-slate-900">Tahmini Bedel</span>
+                                   <span class="font-bold text-2xl text-slate-900">{{ bookingData()?.basePrice | number }} ₺</span>
                                </div>
                            }
                         </div>
-                    </div>
-                 </div>
+                     </div>
 
-                 <!-- Right: Payment & Personal Info -->
-                 <div class="lg:col-span-2">
-                    <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200 relative">
-                        
-                        <!-- Success Overlay -->
-                        @if (successMessage()) {
-                          <div class="absolute inset-0 bg-white z-20 flex flex-col items-center justify-center text-center p-8 animate-fade-in rounded-xl">
-                             <div class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6 text-3xl shadow-lg">
-                                 <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                     <!-- RIGHT: FORM & PAYMENT -->
+                     <div class="lg:col-span-8 order-1 lg:order-2">
+                         
+                         <!-- SUCCESS SCREEN -->
+                         @if (successMessage()) {
+                             <div class="bg-green-50 border border-green-100 rounded-3xl p-12 text-center animate-fade-in-up">
+                                 <div class="w-24 h-24 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-green-200">
+                                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                 </div>
+                                 <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">İşleminiz Başarıyla Alındı!</h2>
+                                 <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">{{ successMessage() }}</p>
+                                 
+                                 <div class="bg-white p-6 rounded-xl border border-green-200 inline-block text-left mb-8">
+                                     <p class="font-bold text-slate-900 mb-2">Rezervasyon Kodunuz:</p>
+                                     <p class="text-2xl font-mono text-green-600 tracking-widest font-bold">ALP-{{ bookingCode() }}</p>
+                                 </div>
+
+                                 <div>
+                                     <button (click)="resetFormAndGoHome()" class="bg-slate-900 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-amber-500 hover:text-slate-900 transition-all shadow-xl transform hover:scale-105">
+                                         Ana Sayfaya Dön
+                                     </button>
+                                 </div>
                              </div>
-                             <h3 class="text-3xl font-bold text-slate-900 mb-2">İşleminiz Başarılı!</h3>
-                             <p class="text-slate-500 mb-8 text-lg max-w-md">{{ successMessage() }}</p>
-                             <button (click)="resetForm()" class="px-8 py-4 bg-slate-900 text-white font-bold rounded-full hover:bg-amber-500 hover:text-slate-900 transition-colors uppercase tracking-widest text-sm shadow-lg">
-                                 Yeni İşlem
-                             </button>
-                          </div>
-                        }
+                         } 
+                         
+                         <!-- INPUT FORM -->
+                         @else {
+                             <div class="bg-white">
+                                 <h2 class="text-2xl font-bold text-slate-900 mb-6">Kişisel Bilgiler</h2>
+                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                                     <div class="space-y-2">
+                                         <label class="text-xs font-bold text-slate-500 uppercase">Adınız <span class="text-red-500">*</span></label>
+                                         <input type="text" [(ngModel)]="formName" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Adınız">
+                                     </div>
+                                     <div class="space-y-2">
+                                         <label class="text-xs font-bold text-slate-500 uppercase">Soyadınız <span class="text-red-500">*</span></label>
+                                         <input type="text" [(ngModel)]="formSurname" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Soyadınız">
+                                     </div>
+                                     <div class="space-y-2">
+                                         <label class="text-xs font-bold text-slate-500 uppercase">Telefon Numarası <span class="text-red-500">*</span></label>
+                                         <input type="tel" [(ngModel)]="formPhone" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="05XX XXX XX XX">
+                                     </div>
+                                     <div class="space-y-2">
+                                         <label class="text-xs font-bold text-slate-500 uppercase">E-Posta Adresi <span class="text-red-500">*</span></label>
+                                         <input type="email" [(ngModel)]="formEmail" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="ornek@mail.com">
+                                     </div>
+                                 </div>
 
-                        <h2 class="font-serif text-2xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100">
-                           {{ bookingData()?.type === 'RENTAL' ? 'Rezervasyonu Tamamla' : 'İletişim Bilgileri' }}
-                        </h2>
+                                 @if (bookingData()?.type === 'RENTAL') {
+                                     <h2 class="text-2xl font-bold text-slate-900 mb-6">Ödeme Yöntemi</h2>
+                                     
+                                     <div class="flex flex-col md:flex-row gap-4 mb-8">
+                                         <button (click)="paymentMethod.set('CREDIT_CARD')" [class]="paymentMethod() === 'CREDIT_CARD' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center group">
+                                             <svg class="w-8 h-8 mb-3" [class]="paymentMethod() === 'CREDIT_CARD' ? 'text-amber-500' : 'text-slate-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                             <span class="font-bold text-sm uppercase tracking-wider">Kredi Kartı</span>
+                                         </button>
+                                         
+                                         <button (click)="paymentMethod.set('OFFICE')" [class]="paymentMethod() === 'OFFICE' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center">
+                                             <svg class="w-8 h-8 mb-3" [class]="paymentMethod() === 'OFFICE' ? 'text-amber-500' : 'text-slate-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                             <span class="font-bold text-sm uppercase tracking-wider">Ofiste Öde</span>
+                                         </button>
 
-                        <form (submit)="processBooking($event)" class="space-y-8">
-                           <!-- Personal Info -->
+                                         <button (click)="paymentMethod.set('EFT')" [class]="paymentMethod() === 'EFT' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center">
+                                             <svg class="w-8 h-8 mb-3" [class]="paymentMethod() === 'EFT' ? 'text-amber-500' : 'text-slate-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+                                             <span class="font-bold text-sm uppercase tracking-wider">Havale / EFT</span>
+                                         </button>
+                                     </div>
+
+                                     <!-- CREDIT CARD FORM -->
+                                     @if (paymentMethod() === 'CREDIT_CARD') {
+                                        <div class="bg-slate-50 p-8 rounded-2xl border border-slate-200 animate-fade-in relative overflow-hidden">
+                                            <div class="absolute top-0 right-0 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">256-Bit SSL Güvenli Ödeme</div>
+                                            
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div class="md:col-span-2">
+                                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">Kart Üzerindeki İsim Soyisim</label>
+                                                    <input type="text" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-bold uppercase placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="AD SOYAD">
+                                                </div>
+                                                <div class="md:col-span-2">
+                                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">Kart Numarası</label>
+                                                    <div class="relative">
+                                                       <input type="text" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-mono font-bold text-lg placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="0000 0000 0000 0000" maxlength="19">
+                                                       <svg class="w-8 h-8 absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">Son Kullanma Tarihi</label>
+                                                    <div class="flex gap-2">
+                                                        <select class="flex-1 bg-white border border-slate-300 p-4 rounded-lg font-bold focus:ring-2 focus:ring-amber-500 outline-none">
+                                                            <option>Ay</option>
+                                                            <option>01</option><option>02</option><option>03</option><option>04</option><option>05</option><option>06</option>
+                                                            <option>07</option><option>08</option><option>09</option><option>10</option><option>11</option><option>12</option>
+                                                        </select>
+                                                        <select class="flex-1 bg-white border border-slate-300 p-4 rounded-lg font-bold focus:ring-2 focus:ring-amber-500 outline-none">
+                                                            <option>Yıl</option>
+                                                            <option>2024</option><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">CVV Güvenlik Kodu</label>
+                                                    <input type="text" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-mono font-bold placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="123" maxlength="3">
+                                                </div>
+                                            </div>
+                                        </div>
+                                     }
+
+                                     <!-- OFFICE PAYMENT -->
+                                     @if (paymentMethod() === 'OFFICE') {
+                                         <div class="bg-blue-50 border border-blue-200 p-8 rounded-2xl text-center animate-fade-in">
+                                             <p class="font-bold text-blue-900 text-lg mb-2">Ofiste Ödeme Seçildi</p>
+                                             <p class="text-blue-700 text-sm">Rezervasyonunuz oluşturulacak. Araç tesliminde nakit veya kredi kartı ile ödeme yapabilirsiniz.</p>
+                                         </div>
+                                     }
+
+                                     <!-- EFT PAYMENT -->
+                                     @if (paymentMethod() === 'EFT') {
+                                         <div class="bg-amber-50 border border-amber-200 p-8 rounded-2xl animate-fade-in">
+                                             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                                                 <div class="text-left">
+                                                     <p class="font-bold text-amber-900 text-lg">Ziraat Bankası</p>
+                                                     <p class="font-mono text-slate-700 font-bold text-xl tracking-wider my-2">TR12 0001 0002 0003 0004 0005 67</p>
+                                                     <p class="text-sm text-slate-600 uppercase">ALICI: ALPERLER OTO KİRALAMA LTD. ŞTİ.</p>
+                                                 </div>
+                                                 <div class="bg-white p-4 rounded-lg border border-amber-100 text-xs text-slate-500 max-w-xs">
+                                                     <p><strong>Önemli:</strong> Lütfen açıklama kısmına <strong>AD SOYAD</strong> yazınız. İşlem sonrası dekontu WhatsApp hattımıza iletiniz.</p>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     }
+
+                                 }
+
+                                 <button (click)="processBooking()" [disabled]="!isValidForm() || isSubmitting()" class="w-full mt-8 bg-slate-900 text-white py-6 rounded-xl font-bold text-xl uppercase tracking-widest hover:bg-amber-500 hover:text-slate-900 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 flex items-center justify-center">
+                                     @if(isSubmitting()) {
+                                         <svg class="animate-spin -ml-1 mr-3 h-6 w-6 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                         {{ bookingData()?.type === 'RENTAL' && paymentMethod() === 'CREDIT_CARD' ? 'Banka ile İletişim Kuruluyor...' : 'İşlem Tamamlanıyor...' }}
+                                     } @else {
+                                         {{ bookingData()?.type === 'RENTAL' ? (paymentMethod() === 'CREDIT_CARD' ? 'Ödemeyi Onayla ve Bitir' : 'Rezervasyonu Tamamla') : 'Talebi Gönder' }}
+                                     }
+                                 </button>
+                                 
+                                 <p class="text-center text-xs text-slate-400 mt-4">"Tamamla" butonuna basarak <span class="underline cursor-pointer">Mesafeli Satış Sözleşmesi</span>'ni kabul etmiş olursunuz.</p>
+                             </div>
+                         }
+                     </div>
+                 </div>
+             </div>
+          </div>
+       }
+
+       <!-- ==========================
+            STANDARD CONTACT PAGE (Non-Booking)
+            ========================== -->
+       @else {
+           <div class="min-h-screen bg-slate-50 pt-28 pb-20">
+               <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+                     <!-- Left Column: Info & Map -->
+                     <div class="space-y-8">
+                        <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg">
+                           <h3 class="font-serif text-xl font-bold mb-6 text-amber-500">İletişim Bilgileri</h3>
+                           <ul class="space-y-6">
+                              <li class="flex items-start">
+                                 <svg class="w-5 h-5 text-amber-500 mr-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                 <span>{{ config().address }}</span>
+                              </li>
+                              <li class="flex items-center">
+                                 <svg class="w-5 h-5 text-amber-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                 <span class="text-lg font-bold">{{ config().phone }}</span>
+                              </li>
+                              <li class="flex items-center">
+                                 <svg class="w-5 h-5 text-amber-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                 <span>{{ config().email }}</span>
+                              </li>
+                           </ul>
+                        </div>
+                        <div class="bg-white p-2 rounded-xl shadow-lg h-[300px] overflow-hidden border border-slate-200">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50276.81582640637!2d44.26237087249756!3d37.55376989803086!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40081211590d3409%3A0x972e3687221b8b2a!2zWcOca3Nla292YSwgSGFra2FyaQ!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                     </div>
+                     <!-- Right Column: Contact Form -->
+                     <div class="bg-white p-8 shadow-xl rounded-xl border-t-4 border-slate-900">
+                        <h2 class="font-serif text-3xl font-bold text-slate-900 mb-2">Bize Ulaşın</h2>
+                        <p class="text-slate-500 mb-8">Sorularınız veya talepleriniz için formu doldurun.</p>
+                        <form (submit)="submitGeneralContact($event)" class="space-y-6">
                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div>
-                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">Adınız</label>
-                                 <input type="text" required [(ngModel)]="formName" name="name" class="w-full bg-slate-50 border border-slate-200 p-3 rounded focus:ring-2 focus:ring-amber-500 outline-none transition-all">
-                              </div>
-                              <div>
-                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">Soyadınız</label>
-                                 <input type="text" required [(ngModel)]="formSurname" name="surname" class="w-full bg-slate-50 border border-slate-200 p-3 rounded focus:ring-2 focus:ring-amber-500 outline-none transition-all">
-                              </div>
-                              <div class="md:col-span-2">
-                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">Telefon Numarası</label>
-                                 <input type="tel" required [(ngModel)]="formPhone" name="phone" placeholder="05XX XXX XX XX" class="w-full bg-slate-50 border border-slate-200 p-3 rounded focus:ring-2 focus:ring-amber-500 outline-none transition-all">
-                              </div>
+                               <input type="text" placeholder="Adınız" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                               <input type="text" placeholder="Soyadınız" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
                            </div>
-
-                           <!-- Payment Methods (Rental Only) -->
-                           @if (bookingData()?.type === 'RENTAL') {
-                               <div class="space-y-4">
-                                   <label class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">Ödeme Yöntemi</label>
-                                   
-                                   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                       <div (click)="paymentMethod.set('CREDIT_CARD')" [class]="paymentMethod() === 'CREDIT_CARD' ? 'border-amber-500 bg-amber-50 text-amber-900 ring-1 ring-amber-500' : 'border-slate-200 hover:border-slate-300'" class="border rounded-lg p-4 cursor-pointer transition-all flex flex-col items-center text-center">
-                                           <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                                           <span class="font-bold text-sm">Kredi Kartı</span>
-                                       </div>
-                                       <div (click)="paymentMethod.set('EFT')" [class]="paymentMethod() === 'EFT' ? 'border-amber-500 bg-amber-50 text-amber-900 ring-1 ring-amber-500' : 'border-slate-200 hover:border-slate-300'" class="border rounded-lg p-4 cursor-pointer transition-all flex flex-col items-center text-center">
-                                           <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
-                                           <span class="font-bold text-sm">Havale / EFT</span>
-                                       </div>
-                                       <div (click)="paymentMethod.set('OFFICE')" [class]="paymentMethod() === 'OFFICE' ? 'border-amber-500 bg-amber-50 text-amber-900 ring-1 ring-amber-500' : 'border-slate-200 hover:border-slate-300'" class="border rounded-lg p-4 cursor-pointer transition-all flex flex-col items-center text-center">
-                                           <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                           <span class="font-bold text-sm">Ofiste Öde</span>
-                                       </div>
-                                   </div>
-
-                                   <!-- Payment Details Content -->
-                                   <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 mt-4">
-                                       @if (paymentMethod() === 'CREDIT_CARD') {
-                                           <div class="space-y-4 animate-fade-in">
-                                               <h4 class="font-bold text-slate-900 mb-4">Kart Bilgileri (Simülasyon)</h4>
-                                               <div>
-                                                   <input type="text" placeholder="Kart Üzerindeki İsim" class="w-full p-3 border border-slate-300 rounded text-sm">
-                                               </div>
-                                               <div>
-                                                   <input type="text" placeholder="Kart Numarası" class="w-full p-3 border border-slate-300 rounded text-sm">
-                                               </div>
-                                               <div class="grid grid-cols-2 gap-4">
-                                                   <input type="text" placeholder="AA/YY" class="w-full p-3 border border-slate-300 rounded text-sm">
-                                                   <input type="text" placeholder="CVC" class="w-full p-3 border border-slate-300 rounded text-sm">
-                                               </div>
-                                               <p class="text-xs text-slate-500 mt-2">* Bu bir demo ödemesidir. Kartınızdan çekim yapılmayacaktır.</p>
-                                           </div>
-                                       } @else if (paymentMethod() === 'EFT') {
-                                           <div class="space-y-3 text-sm text-slate-700 animate-fade-in">
-                                               <p class="font-bold text-amber-600">{{ config().companyName }}</p>
-                                               <div class="bg-white p-3 rounded border">
-                                                   <span class="block text-xs text-slate-400">Ziraat Bankası</span>
-                                                   <span class="font-mono font-bold">TR12 0001 0002 0003 0004 0005 67</span>
-                                               </div>
-                                               <p>Lütfen açıklama kısmına <strong>AD SOYAD</strong> yazınız. Dekontu WhatsApp hattımıza iletiniz.</p>
-                                           </div>
-                                       } @else {
-                                           <div class="text-center text-slate-700 animate-fade-in">
-                                               <p class="mb-2">Rezervasyonunuz oluşturulacak, ödemeyi aracı teslim alırken ofisimizde nakit veya kart ile yapabilirsiniz.</p>
-                                               <p class="font-bold text-green-600">Ön ödeme gerekmiyor.</p>
-                                           </div>
-                                       }
-                                   </div>
-                               </div>
-                           }
-
-                           <button type="submit" [disabled]="isSubmitting()" class="w-full py-4 bg-slate-900 hover:bg-amber-500 hover:text-slate-900 text-white font-bold uppercase tracking-widest transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed text-sm rounded">
-                              {{ isSubmitting() ? 'İşleniyor...' : 'Onayla ve Bitir' }}
-                           </button>
+                           <input type="tel" placeholder="Telefon" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                           <textarea rows="4" placeholder="Mesajınız" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors"></textarea>
+                           <button type="submit" class="w-full py-4 bg-slate-900 text-white font-bold uppercase tracking-widest shadow-lg hover:bg-amber-500 hover:text-slate-900 transition-colors rounded-sm">Gönder</button>
                         </form>
-                    </div>
-                 </div>
-              </div>
-
-          } @else {
-              
-              <!-- STANDARD CONTACT PAGE (No Booking) -->
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
-                 
-                 <!-- Left Column: Info & Map -->
-                 <div class="space-y-8">
-                    <!-- Info Box -->
-                    <div class="bg-slate-900 text-white p-8 rounded-xl shadow-lg">
-                       <h3 class="font-serif text-xl font-bold mb-6 text-amber-500">İletişim Bilgileri</h3>
-                       <ul class="space-y-6">
-                          <li class="flex items-start">
-                             <svg class="w-5 h-5 text-amber-500 mr-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                             <span>{{ config().address }}</span>
-                          </li>
-                          <li class="flex items-center">
-                             <svg class="w-5 h-5 text-amber-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                             <span class="text-lg font-bold">{{ config().phone }}</span>
-                          </li>
-                          <li class="flex items-center">
-                             <svg class="w-5 h-5 text-amber-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                             <span>{{ config().email }}</span>
-                          </li>
-                       </ul>
-                    </div>
-                    
-                    <!-- Map -->
-                    <div class="bg-white p-2 rounded-xl shadow-lg h-[300px] overflow-hidden border border-slate-200">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50276.81582640637!2d44.26237087249756!3d37.55376989803086!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40081211590d3409%3A0x972e3687221b8b2a!2zWcOca3Nla292YSwgSGFra2FyaQ!5e0!3m2!1str!2str!4v1700000000000!5m2!1str!2str" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                    </div>
-                 </div>
-
-                 <!-- Right Column: Contact Form -->
-                 <div class="bg-white p-8 shadow-xl rounded-xl border-t-4 border-slate-900">
-                    <h2 class="font-serif text-3xl font-bold text-slate-900 mb-2">Bize Ulaşın</h2>
-                    <p class="text-slate-500 mb-8">Sorularınız veya talepleriniz için formu doldurun.</p>
-                    
-                    <form (submit)="processBooking($event)" class="space-y-6">
-                       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                           <input type="text" placeholder="Adınız" required [(ngModel)]="formName" name="name" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
-                           <input type="text" placeholder="Soyadınız" required [(ngModel)]="formSurname" name="surname" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
-                       </div>
-                       <input type="tel" placeholder="Telefon" required [(ngModel)]="formPhone" name="phone" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
-                       <textarea rows="4" placeholder="Mesajınız" [(ngModel)]="formMessage" name="message" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors"></textarea>
-                       <button type="submit" class="w-full py-4 bg-slate-900 text-white font-bold uppercase tracking-widest shadow-lg hover:bg-amber-500 hover:text-slate-900 transition-colors rounded-sm">Gönder</button>
-                    </form>
-                 </div>
-              </div>
-          }
-       </div>
+                     </div>
+                  </div>
+               </div>
+           </div>
+       }
     </div>
   `
 })
 export class ContactComponent implements OnInit {
   carService = inject(CarService);
+  router = inject(Router);
   config = this.carService.getConfig();
   
   bookingData = signal<BookingRequest | null>(null);
   
+  // Form Fields
   formName = '';
   formSurname = '';
   formPhone = '';
-  formMessage = '';
+  formEmail = ''; // Added Email
   
+  // Rental Logic
   startDate = '';
   endDate = '';
   totalDays = signal(0);
   totalPrice = signal(0);
-  paymentMethod = signal<'CREDIT_CARD' | 'EFT' | 'OFFICE'>('OFFICE');
+  paymentMethod = signal<'CREDIT_CARD' | 'EFT' | 'OFFICE'>('CREDIT_CARD');
 
+  // UI States
   isSubmitting = signal(false);
   successMessage = signal('');
+  bookingCode = signal('');
 
   ngOnInit() {
     const req = this.carService.getBookingRequest();
@@ -279,53 +338,78 @@ export class ContactComponent implements OnInit {
   clearBooking() {
     this.carService.clearBookingRequest();
     this.bookingData.set(null);
-    this.formMessage = '';
-    this.startDate = '';
-    this.endDate = '';
+    this.resetLocalState();
   }
 
-  processBooking(event: Event) {
-    event.preventDefault();
+  isValidForm(): boolean {
+      return !!(this.formName && this.formSurname && this.formPhone && this.formEmail);
+  }
+
+  processBooking() {
+    if (!this.isValidForm()) return;
+
     this.isSubmitting.set(true);
+    const req = this.bookingData()!;
 
-    const req = this.bookingData();
-
-    const finalRequest: BookingRequest = req ? {
-        ...req,
-        customerName: `${this.formName} ${this.formSurname}`,
-        customerPhone: this.formPhone,
-        startDate: this.startDate,
-        endDate: this.endDate,
-        days: this.totalDays(),
-        totalPrice: this.totalPrice() || req.basePrice
-    } : {
-        type: 'SALE_INQUIRY',
-        item: null,
-        itemName: 'İletişim Formu Mesajı',
-        customerName: `${this.formName} ${this.formSurname}`,
-        customerPhone: this.formPhone,
-        basePrice: 0
-    };
-    
-    this.carService.addReservation(finalRequest);
+    // Simulate Payment Processing Delay
+    const delay = (req.type === 'RENTAL' && this.paymentMethod() === 'CREDIT_CARD') ? 2500 : 1500;
 
     setTimeout(() => {
-      this.isSubmitting.set(false);
-      if (req?.type === 'RENTAL') {
-          const paymentText = this.paymentMethod() === 'CREDIT_CARD' ? 'Kredi Kartı ile ödeme alındı.' : (this.paymentMethod() === 'EFT' ? 'Havale bildirimi oluşturuldu.' : 'Ofiste ödeme seçildi.');
-          this.successMessage.set(`Sayın ${this.formName} ${this.formSurname}, ${req.itemName} için rezervasyonunuz oluşturuldu. ${paymentText} Bizi tercih ettiğiniz için teşekkür ederiz.`);
-      } else {
-          this.successMessage.set(`Talebiniz başarıyla alındı. En kısa sürede ${this.formPhone} üzerinden dönüş yapacağız.`);
-      }
-    }, 1500);
+        this.isSubmitting.set(false);
+        
+        // Generate unique booking code
+        this.bookingCode.set(Math.floor(100000 + Math.random() * 900000).toString());
+
+        // Construct Request
+        const finalRequest: BookingRequest = {
+            ...req,
+            customerName: `${this.formName} ${this.formSurname}`,
+            customerPhone: this.formPhone,
+            customerEmail: this.formEmail,
+            startDate: this.startDate,
+            endDate: this.endDate,
+            days: this.totalDays(),
+            totalPrice: this.totalPrice() || req.basePrice
+        };
+        
+        // Save to Service
+        this.carService.addReservation(finalRequest);
+
+        // Set Success Message based on Payment
+        if (req.type === 'RENTAL') {
+             if (this.paymentMethod() === 'CREDIT_CARD') {
+                 this.successMessage.set(`Ödemeniz güvenli bir şekilde alındı. Araç teslimatı için ofisimizde bekleniyorsunuz.`);
+             } else if (this.paymentMethod() === 'EFT') {
+                 this.successMessage.set(`Havale bildiriminiz alındı. Lütfen ödeme dekontunu 0537 959 48 51 WhatsApp hattımıza iletiniz.`);
+             } else {
+                 this.successMessage.set(`Rezervasyonunuz oluşturuldu. Ödemeyi ofiste araç teslimi sırasında yapabilirsiniz.`);
+             }
+        } else {
+            this.successMessage.set(`Talebiniz bize ulaştı. En kısa sürede ${this.formPhone} numarasından size dönüş yapılacaktır.`);
+        }
+
+    }, delay);
   }
 
-  resetForm() {
+  resetFormAndGoHome() {
+      this.clearBooking();
+      this.router.navigate(['/']);
+  }
+
+  submitGeneralContact(e: Event) {
+      e.preventDefault();
+      alert('Mesajınız iletildi! Teşekkürler.');
+      // Keep it simple for standard form
+  }
+
+  private resetLocalState() {
     this.formName = '';
     this.formSurname = '';
     this.formPhone = '';
-    this.formMessage = '';
-    this.clearBooking();
+    this.formEmail = '';
     this.successMessage.set('');
+    this.bookingCode.set('');
+    this.startDate = '';
+    this.endDate = '';
   }
 }

@@ -44,6 +44,7 @@ export interface BookingRequest {
   status?: 'PENDING' | 'APPROVED' | 'REJECTED';
   dateCreated?: Date;
   customerName?: string;
+  customerEmail?: string; 
   customerPhone?: string;
   
   type: 'RENTAL' | 'TOUR' | 'SALE_INQUIRY';
@@ -66,7 +67,7 @@ export class CarService {
   // --- STATE SIGNALS ---
   private _bookingRequest = signal<BookingRequest | null>(null);
   private _favoriteCars = signal<number[]>([]);
-  private _visitCount = signal<number>(1250); // Start with a realistic base number
+  private _visitCount = signal<number>(1250); 
   
   // --- DATA STORE SIGNALS ---
   
@@ -180,7 +181,6 @@ export class CarService {
   }
 
   private incrementVisitCount() {
-     // Simple incrementer. In real app, use session storage to avoid incrementing on every refresh.
      if(!sessionStorage.getItem('session_active')) {
         sessionStorage.setItem('session_active', 'true');
         this._visitCount.update(c => c + 1);
@@ -203,14 +203,11 @@ export class CarService {
     this._config.set(newConfig);
   }
 
-  // Car Management (Add or Update)
   addCar(car: Car) {
       this._cars.update(c => {
           if (car.id && c.find(x => x.id === car.id)) {
-              // Update existing
               return c.map(x => x.id === car.id ? car : x);
           } else {
-              // Add new
               return [{ ...car, id: Date.now() }, ...c];
           }
       });
@@ -256,24 +253,61 @@ export class CarService {
   isFavorite(id: number) { return this._favoriteCars().includes(id); }
   getFavoriteCount = computed(() => this._favoriteCars().length);
 
+  // --- SUPERCHARGED AI ---
   async getAIRecommendation(userQuery: string): Promise<string> {
     if (!process.env.API_KEY) {
       return `Üzgünüm, şu an bağlantı kurulamıyor. Lütfen telefonla bizi arayın: ${this._config().phone}`;
     }
     try {
+      // Prepare Context Data
+      const contextData = {
+        availableRentalCars: this._cars().filter(c => c.isAvailable).map(c => ({
+           brand: c.brand, model: c.model, type: c.type, price: c.price, fuel: c.fuel, gear: c.transmission, seats: c.seats
+        })),
+        salesGallery: this._saleCars().map(c => ({
+           brand: c.brand, model: c.model, year: c.year, price: c.price, km: c.km, expertReport: c.expertReport
+        })),
+        tours: this._tours().map(t => ({
+           title: t.title, price: t.price, duration: t.duration
+        })),
+        companyInfo: {
+           name: this._config().companyName,
+           phone: this._config().phone,
+           address: this._config().address,
+           aboutStory: this._config().aboutText
+        }
+      };
+
+      const contextString = JSON.stringify(contextData);
+
       const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      
       const prompt = `
-        Sen ${this._config().companyName} asistanısın.
-        İletişim: ${this._config().phone}.
-        Adres: ${this._config().address}.
-        Soru: "${userQuery}"
-        Kısa ve net cevap ver.
+        ROLE: You are 'Alper AI', the intelligent, persuasive, and friendly sales assistant for Alperler Rent A Car in Yüksekova.
+        
+        GOAL: Assist customers by finding the best cars, answering questions about the company story, and encouraging them to book or buy.
+        
+        CONTEXT DATA (Live Inventory):
+        ${contextString}
+
+        INSTRUCTIONS:
+        1. Search the CONTEXT DATA to answer specific questions (e.g., "cheapest car", "SUV prices", "who is Ishak Alper").
+        2. If the user asks for a car recommendation, suggest a specific vehicle from the list and mention its price.
+        3. If asked about the company, summarize the family story (Ishak, Ferhat, Hicran Alper) warmly.
+        4. Always be polite, professional, and sales-oriented. End answers with a call to action (e.g., "Would you like to reserve this now?").
+        5. Keep answers concise (under 3 sentences if possible) but informative.
+        6. If you don't find specific data, suggest calling the phone number provided.
+        7. Speak in Turkish.
+
+        USER QUESTION: "${userQuery}"
       `;
+
       const result = await model.generateContent(prompt);
       const response = await result.response;
       return response.text();
     } catch (error) {
-      return `Lütfen ${this._config().phone} numarasından bize ulaşın.`;
+      console.error("AI Error", error);
+      return `Şu an size yanıt veremiyorum. Lütfen ${this._config().phone} numarasından bize ulaşın, hemen yardımcı olalım.`;
     }
   }
 }

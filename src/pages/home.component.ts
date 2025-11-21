@@ -22,16 +22,16 @@ import { FormsModule } from '@angular/forms';
       <!-- Hero Content (User's Text) -->
       <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center -mt-16">
         <div class="animate-fade-in-up space-y-6">
-          <span class="inline-block py-2 px-6 bg-amber-500 text-slate-900 rounded-full text-sm font-extrabold tracking-wider uppercase mb-2 shadow-lg">
+          <span class="inline-block py-2 px-4 md:px-6 bg-amber-500 text-slate-900 rounded-full text-xs md:text-sm font-extrabold tracking-wider uppercase mb-2 shadow-lg">
             Yüksekova'nın #1 Araç Kiralama Şirketi
           </span>
           
-          <h1 class="font-serif text-5xl md:text-7xl font-bold text-white drop-shadow-lg leading-tight">
+          <h1 class="font-serif text-4xl md:text-7xl font-bold text-white drop-shadow-lg leading-tight">
             HAYALLERİNİZİN<br>
             <span class="text-amber-400">YOL ARKADAŞI!</span>
           </h1>
           
-          <p class="text-lg md:text-xl text-white/95 max-w-3xl mx-auto font-medium drop-shadow-md leading-relaxed">
+          <p class="text-base md:text-xl text-white/95 max-w-3xl mx-auto font-medium drop-shadow-md leading-relaxed px-4">
             Yüksekova'da araç kiralama deneyiminizi bambaşka bir boyuta taşıyoruz. Dağların arasında kaybolurken, şehrin kalabalığında yol alırken ya da iş seyahatinizde güvenin, rahatlığın ve konforun adresi yanınızda.
           </p>
 

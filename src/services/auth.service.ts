@@ -20,18 +20,26 @@ export class AuthService {
     return this._isLoggedIn.asReadonly();
   }
 
-  login(username: string, pass: string): boolean {
+  async login(username: string, pass: string): Promise<boolean> {
+    // Simulate network delay for realism
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     if (!username || !pass) return false;
 
+    // Normalize inputs
     const cleanUser = username.trim().toLowerCase();
     const cleanPass = pass.trim();
 
-    // Secure credentials
-    if (cleanUser === 'admin' && cleanPass === 'Alperler2024') {
+    // Credentials match the prompt requirements
+    const VALID_EMAIL = 'ishak595@gmail.com';
+    const VALID_PASS = 'i4h4k5a2p7r7';
+
+    if (cleanUser === VALID_EMAIL && cleanPass === VALID_PASS) {
       this._isLoggedIn.set(true);
       localStorage.setItem('adminAuth', 'true');
       return true;
     }
+    
     return false;
   }
 
@@ -41,11 +49,12 @@ export class AuthService {
     this.router.navigate(['/admin/login']);
   }
   
-  // Simulated Password Reset
-  resetPassword(email: string): string | null {
+  async resetPassword(email: string): Promise<boolean> {
+     await new Promise(resolve => setTimeout(resolve, 1500));
+     // Simulate success for any valid looking email
      if(email && email.includes('@')) {
-        return 'Alperler2024'; // In a real app, this would email a token.
+        return true;
      }
-     return null;
+     return false;
   }
 }
