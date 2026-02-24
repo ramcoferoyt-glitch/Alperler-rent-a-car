@@ -7,6 +7,7 @@ export interface SiteConfig {
   whatsapp: string; // Just the number
   instagramUrl: string;
   twitterUrl: string;
+  facebookUrl: string;
   youtubeUrl: string;
   tiktokUrl: string;
   aboutTitle: string;

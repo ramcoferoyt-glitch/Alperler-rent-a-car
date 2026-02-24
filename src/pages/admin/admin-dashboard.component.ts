@@ -22,7 +22,7 @@ import { RouterLink } from '@angular/router';
     </div>
     
     <!-- Quick Actions -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <a routerLink="/admin/cars" class="bg-slate-900 hover:bg-slate-800 text-white p-4 rounded-xl shadow-md transition-all flex flex-col justify-between group cursor-pointer border border-slate-700 min-h-[120px]">
             <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-amber-500 group-hover:text-slate-900 transition-colors mb-3">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
@@ -51,6 +51,16 @@ import { RouterLink } from '@angular/router';
                 <div class="font-bold text-xs text-slate-500 uppercase">İçerik</div>
                 <div class="font-bold text-lg text-slate-900">Blog & Haber</div>
             </div>
+        </a>
+
+        <a routerLink="/admin/partner-requests" class="bg-white hover:bg-slate-50 border border-slate-200 p-4 rounded-xl shadow-sm transition-all flex flex-col justify-between group cursor-pointer min-h-[120px]">
+             <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-colors mb-3">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+             </div>
+             <div>
+                 <div class="font-bold text-xs text-slate-500 uppercase">Başvuru</div>
+                 <div class="font-bold text-lg text-slate-900">Araç Sahipleri</div>
+             </div>
         </a>
         
         <div class="bg-amber-500 p-4 rounded-xl shadow-md flex flex-col justify-between text-slate-900 min-h-[120px]">

@@ -4,13 +4,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CarService, BookingRequest } from '../services/car.service';
+import { UiService } from '../services/ui.service';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="font-sans">
+    <div class="font-sans relative z-[60]">
        
        <!-- ==========================
             FULL SCREEN CHECKOUT MODE
@@ -111,38 +112,38 @@ import { CarService, BookingRequest } from '../services/car.service';
                                  <h2 class="text-2xl font-bold text-slate-900 mb-6">Kişisel Bilgiler</h2>
                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                                      <div class="space-y-2">
-                                         <label class="text-xs font-bold text-slate-500 uppercase">Adınız <span class="text-red-500">*</span></label>
-                                         <input type="text" [(ngModel)]="formName" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Adınız">
+                                         <label for="name" class="text-xs font-bold text-slate-500 uppercase">Adınız <span class="text-red-500">*</span></label>
+                                         <input id="name" type="text" [(ngModel)]="formName" aria-label="Adınız" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Adınız">
                                      </div>
                                      <div class="space-y-2">
-                                         <label class="text-xs font-bold text-slate-500 uppercase">Soyadınız <span class="text-red-500">*</span></label>
-                                         <input type="text" [(ngModel)]="formSurname" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Soyadınız">
+                                         <label for="surname" class="text-xs font-bold text-slate-500 uppercase">Soyadınız <span class="text-red-500">*</span></label>
+                                         <input id="surname" type="text" [(ngModel)]="formSurname" aria-label="Soyadınız" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Soyadınız">
                                      </div>
                                      <div class="space-y-2">
-                                         <label class="text-xs font-bold text-slate-500 uppercase">Telefon Numarası <span class="text-red-500">*</span></label>
-                                         <input type="tel" [(ngModel)]="formPhone" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="05XX XXX XX XX">
+                                         <label for="phone" class="text-xs font-bold text-slate-500 uppercase">Telefon Numarası <span class="text-red-500">*</span></label>
+                                         <input id="phone" type="tel" [(ngModel)]="formPhone" aria-label="Telefon Numarası" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="05XX XXX XX XX">
                                      </div>
                                      <div class="space-y-2">
-                                         <label class="text-xs font-bold text-slate-500 uppercase">E-Posta Adresi <span class="text-red-500">*</span></label>
-                                         <input type="email" [(ngModel)]="formEmail" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="ornek@mail.com">
+                                         <label for="email" class="text-xs font-bold text-slate-500 uppercase">E-Posta Adresi <span class="text-red-500">*</span></label>
+                                         <input id="email" type="email" [(ngModel)]="formEmail" aria-label="E-Posta Adresi" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="ornek@mail.com">
                                      </div>
                                  </div>
 
                                  @if (bookingData()?.type === 'RENTAL') {
                                      <h2 class="text-2xl font-bold text-slate-900 mb-6">Ödeme Yöntemi</h2>
                                      
-                                     <div class="flex flex-col md:flex-row gap-4 mb-8">
-                                         <button (click)="paymentMethod.set('CREDIT_CARD')" [class]="paymentMethod() === 'CREDIT_CARD' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center group">
+                                     <div class="flex flex-col md:flex-row gap-4 mb-8" role="radiogroup" aria-label="Ödeme Yöntemi Seçimi">
+                                         <button (click)="paymentMethod.set('CREDIT_CARD')" role="radio" [attr.aria-checked]="paymentMethod() === 'CREDIT_CARD'" [class]="paymentMethod() === 'CREDIT_CARD' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center group">
                                              <svg class="w-8 h-8 mb-3" [class]="paymentMethod() === 'CREDIT_CARD' ? 'text-amber-500' : 'text-slate-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                                              <span class="font-bold text-sm uppercase tracking-wider">Kredi Kartı</span>
                                          </button>
                                          
-                                         <button (click)="paymentMethod.set('OFFICE')" [class]="paymentMethod() === 'OFFICE' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center">
+                                         <button (click)="paymentMethod.set('OFFICE')" role="radio" [attr.aria-checked]="paymentMethod() === 'OFFICE'" [class]="paymentMethod() === 'OFFICE' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center">
                                              <svg class="w-8 h-8 mb-3" [class]="paymentMethod() === 'OFFICE' ? 'text-amber-500' : 'text-slate-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                                              <span class="font-bold text-sm uppercase tracking-wider">Ofiste Öde</span>
                                          </button>
 
-                                         <button (click)="paymentMethod.set('EFT')" [class]="paymentMethod() === 'EFT' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center">
+                                         <button (click)="paymentMethod.set('EFT')" role="radio" [attr.aria-checked]="paymentMethod() === 'EFT'" [class]="paymentMethod() === 'EFT' ? 'bg-slate-900 text-white shadow-xl scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="flex-1 p-6 rounded-xl transition-all flex flex-col items-center justify-center">
                                              <svg class="w-8 h-8 mb-3" [class]="paymentMethod() === 'EFT' ? 'text-amber-500' : 'text-slate-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
                                              <span class="font-bold text-sm uppercase tracking-wider">Havale / EFT</span>
                                          </button>
@@ -155,33 +156,33 @@ import { CarService, BookingRequest } from '../services/car.service';
                                             
                                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div class="md:col-span-2">
-                                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">Kart Üzerindeki İsim Soyisim</label>
-                                                    <input type="text" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-bold uppercase placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="AD SOYAD">
+                                                    <label for="cc-name" class="text-xs font-bold text-slate-500 uppercase block mb-2">Kart Üzerindeki İsim Soyisim</label>
+                                                    <input id="cc-name" type="text" aria-label="Kart Üzerindeki İsim Soyisim" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-bold uppercase placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="AD SOYAD">
                                                 </div>
                                                 <div class="md:col-span-2">
-                                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">Kart Numarası</label>
+                                                    <label for="cc-number" class="text-xs font-bold text-slate-500 uppercase block mb-2">Kart Numarası</label>
                                                     <div class="relative">
-                                                       <input type="text" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-mono font-bold text-lg placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="0000 0000 0000 0000" maxlength="19">
+                                                       <input id="cc-number" type="text" aria-label="Kart Numarası" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-mono font-bold text-lg placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="0000 0000 0000 0000" maxlength="19">
                                                        <svg class="w-8 h-8 absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">Son Kullanma Tarihi</label>
+                                                    <label for="cc-exp-month" class="text-xs font-bold text-slate-500 uppercase block mb-2">Son Kullanma Tarihi</label>
                                                     <div class="flex gap-2">
-                                                        <select class="flex-1 bg-white border border-slate-300 p-4 rounded-lg font-bold focus:ring-2 focus:ring-amber-500 outline-none">
+                                                        <select id="cc-exp-month" aria-label="Ay" class="flex-1 bg-white border border-slate-300 p-4 rounded-lg font-bold focus:ring-2 focus:ring-amber-500 outline-none">
                                                             <option>Ay</option>
                                                             <option>01</option><option>02</option><option>03</option><option>04</option><option>05</option><option>06</option>
                                                             <option>07</option><option>08</option><option>09</option><option>10</option><option>11</option><option>12</option>
                                                         </select>
-                                                        <select class="flex-1 bg-white border border-slate-300 p-4 rounded-lg font-bold focus:ring-2 focus:ring-amber-500 outline-none">
+                                                        <select aria-label="Yıl" class="flex-1 bg-white border border-slate-300 p-4 rounded-lg font-bold focus:ring-2 focus:ring-amber-500 outline-none">
                                                             <option>Yıl</option>
                                                             <option>2024</option><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option>
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-2">CVV Güvenlik Kodu</label>
-                                                    <input type="text" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-mono font-bold placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="123" maxlength="3">
+                                                    <label for="cc-cvv" class="text-xs font-bold text-slate-500 uppercase block mb-2">CVV Güvenlik Kodu</label>
+                                                    <input id="cc-cvv" type="text" aria-label="CVV" class="w-full bg-white border border-slate-300 p-4 rounded-lg font-mono font-bold placeholder-slate-300 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="123" maxlength="3">
                                                 </div>
                                             </div>
                                         </div>
@@ -235,8 +236,23 @@ import { CarService, BookingRequest } from '../services/car.service';
             STANDARD CONTACT PAGE (Non-Booking)
             ========================== -->
        @else {
-           <div class="min-h-screen bg-slate-50 pt-28 pb-20">
-               <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+           <div class="min-h-screen bg-slate-50 pt-0 font-sans relative z-50">
+               
+               <!-- Close Button -->
+               <button (click)="close()" class="fixed top-6 right-6 z-50 bg-slate-900/10 hover:bg-slate-900 text-slate-900 hover:text-white rounded-full p-3 transition-all duration-300 shadow-lg border border-slate-900/10 group backdrop-blur-sm">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Kapat</span>
+               </button>
+
+               <div class="relative bg-slate-900 h-[400px] flex items-center justify-center overflow-hidden mb-[-100px]">
+                  <div class="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"></div>
+                  <div class="relative z-10 text-center">
+                      <h1 class="font-serif text-5xl font-bold text-white mb-4">İletişim</h1>
+                      <p class="text-slate-400 text-lg">7/24 Yanınızdayız</p>
+                  </div>
+               </div>
+
+               <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 relative z-10">
                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
                      <!-- Left Column: Info & Map -->
                      <div class="space-y-8">
@@ -267,11 +283,23 @@ import { CarService, BookingRequest } from '../services/car.service';
                         <p class="text-slate-500 mb-8">Sorularınız veya talepleriniz için formu doldurun.</p>
                         <form (submit)="submitGeneralContact($event)" class="space-y-6">
                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                               <input type="text" placeholder="Adınız" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
-                               <input type="text" placeholder="Soyadınız" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                               <div>
+                                   <label for="contact-name" class="sr-only">Adınız</label>
+                                   <input id="contact-name" type="text" placeholder="Adınız" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                               </div>
+                               <div>
+                                   <label for="contact-surname" class="sr-only">Soyadınız</label>
+                                   <input id="contact-surname" type="text" placeholder="Soyadınız" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                               </div>
                            </div>
-                           <input type="tel" placeholder="Telefon" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
-                           <textarea rows="4" placeholder="Mesajınız" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors"></textarea>
+                           <div>
+                               <label for="contact-phone" class="sr-only">Telefon</label>
+                               <input id="contact-phone" type="tel" placeholder="Telefon" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors">
+                           </div>
+                           <div>
+                               <label for="contact-message" class="sr-only">Mesajınız</label>
+                               <textarea id="contact-message" rows="4" placeholder="Mesajınız" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-sm focus:ring-1 focus:ring-amber-500 outline-none transition-colors"></textarea>
+                           </div>
                            <button type="submit" class="w-full py-4 bg-slate-900 text-white font-bold uppercase tracking-widest shadow-lg hover:bg-amber-500 hover:text-slate-900 transition-colors rounded-sm">Gönder</button>
                         </form>
                      </div>
@@ -284,10 +312,15 @@ import { CarService, BookingRequest } from '../services/car.service';
 })
 export class ContactComponent implements OnInit {
   carService = inject(CarService);
+  uiService = inject(UiService);
   router = inject(Router);
   config = this.carService.getConfig();
   
   bookingData = signal<BookingRequest | null>(null);
+
+  close() {
+      this.uiService.toggleContact(false);
+  }
   
   // Form Fields
   formName = '';
@@ -339,6 +372,7 @@ export class ContactComponent implements OnInit {
     this.carService.clearBookingRequest();
     this.bookingData.set(null);
     this.resetLocalState();
+    this.uiService.toggleContact(false);
   }
 
   isValidForm(): boolean {
@@ -393,7 +427,7 @@ export class ContactComponent implements OnInit {
 
   resetFormAndGoHome() {
       this.clearBooking();
-      this.router.navigate(['/']);
+      // clearBooking already closes the overlay
   }
 
   submitGeneralContact(e: Event) {

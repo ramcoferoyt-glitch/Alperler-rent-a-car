@@ -11,12 +11,15 @@ import { CarService } from '../services/car.service';
     <div class="fixed bottom-6 right-6 z-40 font-sans">
       <!-- Toggle Button -->
       @if (!isOpen()) {
-        <button (click)="toggleChat()" class="bg-slate-900 hover:bg-blue-900 text-white rounded-full p-4 shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center group border-2 border-white/10">
+        <button (click)="toggleChat()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-full p-4 shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center group border-2 border-white/20 animate-bounce-subtle">
           <div class="relative">
-             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-             <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900"></span>
+             <svg class="w-8 h-8 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+             <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse"></span>
           </div>
-          <span class="font-bold tracking-wide pr-2">Canlı Destek</span>
+          <div class="flex flex-col items-start">
+             <span class="font-bold tracking-wide text-sm">Canlı Destek</span>
+             <span class="text-[10px] font-medium opacity-80">Online</span>
+          </div>
         </button>
       }
 

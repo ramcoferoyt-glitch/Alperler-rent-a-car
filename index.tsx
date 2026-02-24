@@ -1,20 +1,19 @@
-import '@angular/compiler';
+
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withHashLocation, withInMemoryScrolling } from '@angular/router';
 import { AppComponent } from './src/app.component';
 import { routes } from './src/app.routes';
+import { APP_BASE_HREF } from '@angular/common';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),
+    { provide: APP_BASE_HREF, useValue: '/' },
     provideRouter(
       routes, 
       withHashLocation(),
-      withInMemoryScrolling({
-        scrollPositionRestoration: 'enabled',
-        anchorScrolling: 'enabled'
-      })
+      withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })
     )
   ]
 }).catch(err => console.error(err));

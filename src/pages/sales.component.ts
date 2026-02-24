@@ -95,10 +95,10 @@ import { Router } from '@angular/router';
                      <div class="flex flex-col sm:flex-row justify-between items-center pt-6 border-t border-slate-100 mt-4 gap-4">
                         <div class="text-3xl font-bold text-slate-900">{{car.price | number}} ₺</div>
                         <div class="flex gap-2 w-full sm:w-auto">
-                            <button (click)="inquireCar(car, 'MEET')" class="flex-1 px-6 py-3 bg-white border-2 border-slate-900 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-slate-50 transition-colors">
+                            <button (click)="inquireCar(car, 'MEET')" [attr.aria-label]="'Randevu Al: ' + car.brand + ' ' + car.model" class="flex-1 px-6 py-3 bg-white border-2 border-slate-900 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-slate-50 transition-colors">
                                 Randevu Al
                             </button>
-                            <button (click)="inquireCar(car, 'INFO')" class="flex-1 px-6 py-3 bg-slate-900 text-white font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-amber-500 hover:text-slate-900 transition-colors">
+                            <button (click)="inquireCar(car, 'INFO')" [attr.aria-label]="'Satın Al: ' + car.brand + ' ' + car.model" class="flex-1 px-6 py-3 bg-slate-900 text-white font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-amber-500 hover:text-slate-900 transition-colors">
                                 Satın Al
                             </button>
                         </div>

@@ -2,6 +2,7 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarService } from '../services/car.service';
+import { UiService } from '../services/ui.service';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Car } from '../models/car.model';
@@ -23,17 +24,19 @@ import { Car } from '../models/car.model';
         <!-- Filters & Sort -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
              <!-- Type Filters -->
-             <div class="flex flex-wrap justify-center gap-2">
-                <button (click)="filterType.set('All')" [class]="filterType() === 'All' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Tümü</button>
-                <button (click)="filterType.set('SUV')" [class]="filterType() === 'SUV' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">SUV</button>
-                <button (click)="filterType.set('Pickup')" [class]="filterType() === 'Pickup' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Pikap</button>
-                <button (click)="filterType.set('Sedan')" [class]="filterType() === 'Sedan' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Sedan</button>
-                <button (click)="filterType.set('Hatchback')" [class]="filterType() === 'Hatchback' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Ekonomik</button>
+             <div class="flex flex-wrap justify-center gap-2" role="group" aria-label="Araç Tipi Filtreleri">
+                <button (click)="filterType.set('All')" [attr.aria-pressed]="filterType() === 'All'" [class]="filterType() === 'All' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Tümü</button>
+                <button (click)="filterType.set('SUV')" [attr.aria-pressed]="filterType() === 'SUV'" [class]="filterType() === 'SUV' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">SUV</button>
+                <button (click)="filterType.set('Pickup')" [attr.aria-pressed]="filterType() === 'Pickup'" [class]="filterType() === 'Pickup' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Pikap</button>
+                <button (click)="filterType.set('Sedan')" [attr.aria-pressed]="filterType() === 'Sedan'" [class]="filterType() === 'Sedan' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Sedan</button>
+                <button (click)="filterType.set('Hatchback')" [attr.aria-pressed]="filterType() === 'Hatchback'" [class]="filterType() === 'Hatchback' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Ekonomik</button>
+                <button (click)="filterType.set('Luxury')" [attr.aria-pressed]="filterType() === 'Luxury'" [class]="filterType() === 'Luxury' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100'" class="px-5 py-2 rounded-full font-bold text-sm transition-all">Lüks</button>
              </div>
 
              <!-- Sorting -->
              <div class="relative">
-                 <select [(ngModel)]="sortOption" class="appearance-none bg-white border border-slate-200 text-slate-700 py-2 px-4 pr-8 rounded-full font-bold text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm cursor-pointer">
+                 <label for="sort-select" class="sr-only">Sıralama</label>
+                 <select id="sort-select" [(ngModel)]="sortOption" class="appearance-none bg-white border border-slate-200 text-slate-700 py-2 px-4 pr-8 rounded-full font-bold text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm cursor-pointer">
                      <option value="default">Önerilen Sıralama</option>
                      <option value="priceAsc">Fiyat: Artan</option>
                      <option value="priceDesc">Fiyat: Azalan</option>
@@ -77,7 +80,7 @@ import { Car } from '../models/car.model';
                     </div>
 
                     <!-- Favorite Button -->
-                    <button (click)="toggleFav($event, car.id)" class="absolute top-4 right-4 z-30 w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center transition-all hover:scale-110 shadow-md">
+                    <button (click)="toggleFav($event, car.id)" [attr.aria-label]="isFav(car.id) ? 'Favorilerden Çıkar' : 'Favorilere Ekle'" class="absolute top-4 right-4 z-30 w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center transition-all hover:scale-110 shadow-md">
                          @if (isFav(car.id)) {
                             <svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                          } @else {
@@ -112,6 +115,7 @@ import { Car } from '../models/car.model';
 
                     <button (click)="rentCar(car)" 
                             [disabled]="!car.isAvailable"
+                            [attr.aria-label]="!car.isAvailable ? 'Araç Müsait Değil' : (withDriver() ? 'Şoförlü Kirala' : 'Hemen Kirala')"
                             class="mt-auto w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-900 text-white font-bold py-3 rounded transition-colors shadow-lg flex justify-center items-center disabled:bg-slate-300 disabled:cursor-not-allowed disabled:text-slate-500">
                        <span>{{ !car.isAvailable ? 'Müsait Değil' : (withDriver() ? 'Şoförlü Kirala' : 'Hemen Kirala') }}</span>
                        @if(car.isAvailable) {
@@ -128,6 +132,7 @@ import { Car } from '../models/car.model';
 })
 export class FleetComponent implements OnInit {
   carService = inject(CarService);
+  uiService = inject(UiService);
   router = inject(Router);
   route = inject(ActivatedRoute);
   
@@ -183,6 +188,6 @@ export class FleetComponent implements OnInit {
     };
 
     this.carService.setBookingRequest(request);
-    this.router.navigate(['/contact']);
+    this.uiService.toggleContact(true);
   }
 }

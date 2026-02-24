@@ -1,7 +1,8 @@
 
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { UiService } from '../services/ui.service';
 
 @Component({
   selector: 'app-legal',
@@ -13,8 +14,11 @@ import { ActivatedRoute } from '@angular/router';
         <h1 class="font-serif text-3xl md:text-4xl font-bold text-slate-900 mb-8 pb-4 border-b border-slate-200">
             {{ title() }}
         </h1>
-        <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line">
-            {{ content() }}
+        <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line" [innerHTML]="content()">
+        </div>
+        
+        <div class="mt-8 text-center">
+            <button (click)="close()" class="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-700 transition-colors">Kapat</button>
         </div>
       </div>
     </div>
@@ -22,19 +26,36 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class LegalComponent implements OnInit {
   route = inject(ActivatedRoute);
+  uiService = inject(UiService);
   title = signal('');
   content = signal('');
 
+  constructor() {
+      effect(() => {
+          const type = this.uiService.legalType();
+          if (type) {
+              this.setContent(type);
+          }
+      });
+  }
+
   ngOnInit() {
       this.route.data.subscribe(data => {
-          this.title.set(data['title']);
-          this.setContent(data['type']);
-          window.scrollTo(0,0);
+          if (data['type']) {
+             this.title.set(data['title']);
+             this.setContent(data['type']);
+             window.scrollTo(0,0);
+          }
       });
+  }
+
+  close() {
+      this.uiService.openLegal(null as any); // Close overlay
   }
 
   setContent(type: string) {
       if (type === 'kvkk') {
+          this.title.set('KVKK Aydınlatma Metni');
           this.content.set(`
             <strong>KİŞİSEL VERİLERİN KORUNMASI KANUNU (KVKK) AYDINLATMA METNİ</strong>
 
@@ -56,6 +77,7 @@ export class LegalComponent implements OnInit {
             KVKK'nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, düzeltme talep etme ve silinmesini isteme haklarına sahipsiniz.
           `);
       } else if (type === 'privacy') {
+          this.title.set('Gizlilik Politikası');
           this.content.set(`
             <strong>GİZLİLİK POLİTİKASI</strong>
 
@@ -74,6 +96,7 @@ export class LegalComponent implements OnInit {
             Gizlilik politikamızla ilgili sorularınız için info@alperlerrentacar.com adresinden bize ulaşabilirsiniz.
           `);
       } else if (type === 'cookies') {
+          this.title.set('Çerez Politikası');
           this.content.set(`
             <strong>ÇEREZ (COOKIE) POLİTİKASI</strong>
 
@@ -88,6 +111,26 @@ export class LegalComponent implements OnInit {
 
             <strong>3. Çerez Yönetimi</strong>
             Tarayıcı ayarlarınızı değiştirerek çerezleri reddetme veya silme hakkına sahipsiniz. Ancak bu durumda sitemizin bazı fonksiyonları düzgün çalışmayabilir.
+          `);
+      } else if (type === 'terms') {
+          this.title.set('Kiralama Koşulları');
+          this.content.set(`
+            <strong>ARAÇ KİRALAMA KOŞULLARI</strong>
+
+            <strong>1. Ehliyet ve Yaş Sınırı</strong>
+            Ekonomik grup araçlar için en az 21 yaş ve 2 yıllık ehliyet, orta ve üst grup araçlar için en az 25 yaş ve 3 yıllık ehliyet gerekmektedir.
+
+            <strong>2. Kiralama Süresi</strong>
+            En az kiralama süresi 24 saattir. Gecikmelerde her saat için günlük ücretin 1/3'ü, 3 saati aşan gecikmelerde tam gün ücreti tahsil edilir.
+
+            <strong>3. Ödeme ve Depozito</strong>
+            Kiralama başlangıcında toplam kira bedeli tahsil edilir. Araç grubuna göre değişen tutarlarda kredi kartından provizyon (depozito) alınır.
+
+            <strong>4. Yakıt Politikası</strong>
+            Araçlar teslim edildiği yakıt seviyesinde iade alınır. Eksik yakıtla iade durumunda yakıt bedeli + %20 hizmet bedeli tahsil edilir.
+
+            <strong>5. Sigorta ve Kasko</strong>
+            Tüm araçlarımızda Rent A Car kaskosu bulunmaktadır. Ancak alkollü kullanım, rapor tutulmaması veya kasko kapsamı dışındaki durumlarda hasar bedeli kiracıya aittir.
           `);
       }
   }

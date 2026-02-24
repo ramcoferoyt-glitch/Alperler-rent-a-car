@@ -60,6 +60,24 @@ export interface BookingRequest {
   pickupLocation?: string;
 }
 
+export interface PartnerRequest {
+  id: number;
+  name: string;
+  phone: string;
+  carBrand: string;
+  modelYear: number;
+  km: number;
+  description: string;
+  date: Date;
+}
+
+export interface FaqItem {
+  id: number;
+  question: string;
+  answer: string;
+  isOpen?: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -68,6 +86,7 @@ export class CarService {
   private _bookingRequest = signal<BookingRequest | null>(null);
   private _favoriteCars = signal<number[]>([]);
   private _visitCount = signal<number>(1250); 
+  private _partnerRequests = signal<PartnerRequest[]>([]);
   
   // --- DATA STORE SIGNALS ---
   
@@ -80,12 +99,23 @@ export class CarService {
     whatsapp: '905379594851',
     instagramUrl: 'https://instagram.com/',
     twitterUrl: 'https://x.com/',
-    youtubeUrl: 'https://youtube.com/',
+    facebookUrl: 'https://facebook.com/',
     tiktokUrl: 'https://tiktok.com/',
+    youtubeUrl: 'https://youtube.com/',
     aboutTitle: 'AİLE BAĞLARINDAN DOĞAN GÜÇ',
     aboutText: `Alperler Rent A Car, sıradan bir ticarethane değil, temelleri sevgi ve aile bağlarıyla atılmış bir hayalin gerçeğe dönüşmesidir. Bu hikaye, İshak Alper ve kardeşi Ferhat Alper'in, yeğenleri (Hicran Hanım'ın oğlu) Alper'in geleceğini inşa etme arzusuyla başlar.\n\nAilenin birleştirici gücü olan Genel Müdürümüz Hicran Alper, bir anne şefkati ve disipliniyle şirketin operasyonlarını yönetirken, kurucumuz ve dayısı İshak Alper ise vizyoner kimliğiyle markayı bölgenin zirvesine taşımıştır.`,
     footerText: "Yüksekova'da güvenilir araç kiralama hizmetiyle hayallerinizin yol arkadaşı. Premium hizmet, güvenli yolculuk."
   });
+
+  // 7. FAQs
+  private _faqs = signal<FaqItem[]>([
+    { id: 1, question: "Araç kiralama için hangi belgeler gerekli?", answer: "Geçerli ehliyet, kimlik belgesi ve kredi kartı yeterlidir. Yabancı uyruklu müşterilerimiz için pasaport ve uluslararası ehliyet gereklidir." },
+    { id: 2, question: "Minimum kiralama süresi nedir?", answer: "Minimum kiralama süremiz 1 gündür. Saatlik kiralama hizmetimiz bulunmamaktadır." },
+    { id: 3, question: "Araçları başka şehirde teslim edebilir miyim?", answer: "Evet, ek ücret karşılığında farklı şehirlerde araç teslimi yapabilirsiniz. Detaylar için 0537 959 48 51 numaralı hattımızdan bizimle iletişime geçin." },
+    { id: 4, question: "Hasar durumunda ne yapmalıyım?", answer: "Herhangi bir hasar durumunda derhal 0537 959 48 51 numaralı hattımızdan bizimle iletişime geçin. Kasko sigortamız kapsamında gerekli işlemler başlatılacaktır." },
+    { id: 5, question: "Depozito (Provizyon) alıyor musunuz?", answer: "Evet, araç grubuna göre değişen miktarlarda kredi kartından provizyon alınmaktadır. Araç tesliminden sonra bu tutar iade edilir." },
+    { id: 6, question: "Bilgilerimin güvenliği nasıl sağlanıyor?", answer: "Tüm kişisel bilgileriniz SSL şifreleme ile korunmakta ve KVKK kapsamında güvenli bir şekilde saklanmaktadır." }
+  ]);
 
   // 2. Cars
   private _cars = signal<Car[]>([
@@ -137,7 +167,11 @@ export class CarService {
   // 6. Tours
   private _tours = signal<Tour[]>([
     { id: 1, title: 'Cilo Dağları & Buzullar Zirvesi', duration: 'Tam Gün', price: 4500, description: 'Türkiye’nin en yüksek 2. zirvesi ve 4 mevsim erimeyen buzullarına efsanevi bir yolculuk.', highlights: ['Uludoruk Buzulları', 'Cennet-Cehennem Vadisi', 'Yayla Kahvaltısı'], image: 'https://picsum.photos/id/1036/800/600' },
-    { id: 2, title: 'Sat Buzul Gölleri & Şelaleler', duration: 'Tam Gün', price: 4000, description: '3000 metre rakımda turkuaz rengi göllerin ve gürül gürül akan şelalelerin eşsiz manzarası.', highlights: ['Sat Gölleri', 'Doğa Yürüyüşü', 'Piknik', 'Fotoğraf Safari'], image: 'https://picsum.photos/id/1043/800/600' }
+    { id: 2, title: 'Sat Buzul Gölleri & Şelaleler', duration: 'Tam Gün', price: 4000, description: '3000 metre rakımda turkuaz rengi göllerin ve gürül gürül akan şelalelerin eşsiz manzarası.', highlights: ['Sat Gölleri', 'Doğa Yürüyüşü', 'Piknik', 'Fotoğraf Safari'], image: 'https://picsum.photos/id/1043/800/600' },
+    { id: 3, title: 'Zap Vadisi & Rafting Heyecanı', duration: 'Yarım Gün', price: 2500, description: 'Zap Suyu’nun hırçın dalgalarında adrenalin dolu bir rafting deneyimi ve vadi manzarası.', highlights: ['Rafting', 'Asma Köprü', 'Vadi Manzarası'], image: 'https://picsum.photos/id/1015/800/600' },
+    { id: 4, title: 'Şemdinli & Nehri İnanç Turu', duration: 'Tam Gün', price: 3500, description: 'Tarihi Taş Köprü, Kayme Sarayı ve Nehri’nin manevi atmosferinde kültürel bir yolculuk.', highlights: ['Taş Köprü', 'Kayme Sarayı', 'Seyir Terası'], image: 'https://picsum.photos/id/1040/800/600' },
+    { id: 5, title: 'Berçelan Yaylası & Kamp', duration: '2 Gün 1 Gece', price: 6000, description: 'Yıldızların altında kamp, yayla havası ve dört mevsimi bir arada yaşama şansı.', highlights: ['Kamp Ateşi', 'Trekking', 'Yayla Yaşamı'], image: 'https://picsum.photos/id/1018/800/600' },
+    { id: 6, title: 'Yeşiltaş Köyü & Doğa Gezisi', duration: 'Tam Gün', price: 3000, description: 'Yüksekova’nın saklı cenneti Yeşiltaş Köyü’nde doğa ile iç içe, huzur dolu bir gün.', highlights: ['Köy Kahvaltısı', 'Doğa Yürüyüşü', 'Fotoğrafçılık'], image: 'https://picsum.photos/id/1039/800/600' }
   ]);
 
   private genAI: GoogleGenAI;
@@ -154,7 +188,9 @@ export class CarService {
     effect(() => localStorage.setItem('db_saleCars', JSON.stringify(this._saleCars())));
     effect(() => localStorage.setItem('db_blog', JSON.stringify(this._blogPosts())));
     effect(() => localStorage.setItem('db_reservations', JSON.stringify(this._reservations())));
+    effect(() => localStorage.setItem('db_partnerRequests', JSON.stringify(this._partnerRequests())));
     effect(() => localStorage.setItem('db_visits', this._visitCount().toString()));
+    effect(() => localStorage.setItem('db_faqs', JSON.stringify(this._faqs())));
   }
 
   private loadFromStorage() {
@@ -176,8 +212,14 @@ export class CarService {
       const reservations = localStorage.getItem('db_reservations');
       if (reservations) this._reservations.set(JSON.parse(reservations));
 
+      const partnerRequests = localStorage.getItem('db_partnerRequests');
+      if (partnerRequests) this._partnerRequests.set(JSON.parse(partnerRequests));
+
       const visits = localStorage.getItem('db_visits');
       if(visits) this._visitCount.set(parseInt(visits));
+
+      const faqs = localStorage.getItem('db_faqs');
+      if (faqs) this._faqs.set(JSON.parse(faqs));
   }
 
   private incrementVisitCount() {
@@ -194,11 +236,52 @@ export class CarService {
   getTours() { return this._tours.asReadonly(); }
   getBlogPosts() { return this._blogPosts.asReadonly(); }
   getReservations() { return this._reservations.asReadonly(); }
+  getPartnerRequests() { return this._partnerRequests.asReadonly(); }
   getBlogPost(id: number) { return this._blogPosts().find(p => p.id === id); }
   getVisitCount() { return this._visitCount.asReadonly(); }
+  getFaqs() { return this._faqs.asReadonly(); }
 
   // --- ADMIN ACTIONS ---
   
+  addFaq(faq: FaqItem) {
+      this._faqs.update(f => {
+          if (faq.id && f.find(x => x.id === faq.id)) {
+              return f.map(x => x.id === faq.id ? faq : x);
+          } else {
+              return [{ ...faq, id: Date.now() }, ...f];
+          }
+      });
+  }
+  deleteFaq(id: number) {
+      this._faqs.update(f => f.filter(x => x.id !== id));
+  }
+
+  addTour(tour: Tour) {
+      this._tours.update(t => {
+          if (tour.id && t.find(x => x.id === tour.id)) {
+              return t.map(x => x.id === tour.id ? tour : x);
+          } else {
+              return [{ ...tour, id: Date.now() }, ...t];
+          }
+      });
+  }
+  deleteTour(id: number) {
+      this._tours.update(t => t.filter(x => x.id !== id));
+  }
+
+  addPartnerRequest(req: Omit<PartnerRequest, 'id' | 'date'>) {
+    const newReq: PartnerRequest = {
+      ...req,
+      id: Date.now(),
+      date: new Date()
+    };
+    this._partnerRequests.update(reqs => [newReq, ...reqs]);
+  }
+
+  deletePartnerRequest(id: number) {
+    this._partnerRequests.update(reqs => reqs.filter(r => r.id !== id));
+  }
+
   updateConfig(newConfig: SiteConfig) {
     this._config.set(newConfig);
   }
@@ -217,7 +300,13 @@ export class CarService {
   }
 
   addSaleCar(car: SaleCar) {
-      this._saleCars.update(c => [...c, { ...car, id: Date.now() }]);
+      this._saleCars.update(c => {
+          if (car.id && c.find(x => x.id === car.id)) {
+              return c.map(x => x.id === car.id ? car : x);
+          } else {
+              return [{ ...car, id: Date.now() }, ...c];
+          }
+      });
   }
   deleteSaleCar(id: number) {
       this._saleCars.update(cars => cars.filter(c => c.id !== id));
@@ -280,31 +369,34 @@ export class CarService {
 
       const contextString = JSON.stringify(contextData);
 
-      const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-      
       const prompt = `
         ROLE: You are 'Alper AI', the intelligent, persuasive, and friendly sales assistant for Alperler Rent A Car in Yüksekova.
         
-        GOAL: Assist customers by finding the best cars, answering questions about the company story, and encouraging them to book or buy.
+        GOAL: Assist customers by finding the best cars, answering questions about the company story, and encouraging them to book or buy. You have full access to the inventory.
         
         CONTEXT DATA (Live Inventory):
         ${contextString}
 
         INSTRUCTIONS:
         1. Search the CONTEXT DATA to answer specific questions (e.g., "cheapest car", "SUV prices", "who is Ishak Alper").
-        2. If the user asks for a car recommendation, suggest a specific vehicle from the list and mention its price.
+        2. If the user asks for a car recommendation, suggest a specific vehicle from the list and mention its price. Ask about their budget or needs if unclear.
         3. If asked about the company, summarize the family story (Ishak, Ferhat, Hicran Alper) warmly.
-        4. Always be polite, professional, and sales-oriented. End answers with a call to action (e.g., "Would you like to reserve this now?").
-        5. Keep answers concise (under 3 sentences if possible) but informative.
-        6. If you don't find specific data, suggest calling the phone number provided.
-        7. Speak in Turkish.
+        4. Always be polite, professional, and sales-oriented. End answers with a call to action (e.g., "Would you like to reserve this now?" or "Shall I connect you to an agent?").
+        5. You can help with technical problems or feedback. If a user reports an issue, apologize and suggest they contact support immediately via WhatsApp.
+        6. If the user wants to BUY a car (Second Hand), check the 'salesGallery' list and promote those cars.
+        7. If the user wants a TOUR, check the 'tours' list.
+        8. Speak in Turkish.
+        9. Be concise but helpful.
 
         USER QUESTION: "${userQuery}"
       `;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
+      const result = await this.genAI.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt
+      });
+      
+      return result.text || "Şu an yanıt veremiyorum.";
     } catch (error) {
       console.error("AI Error", error);
       return `Şu an size yanıt veremiyorum. Lütfen ${this._config().phone} numarasından bize ulaşın, hemen yardımcı olalım.`;

@@ -1,9 +1,10 @@
 
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { CarService } from '../services/car.service';
 import { Car } from '../models/car.model';
+import { UiService } from '../services/ui.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -27,17 +28,16 @@ import { FormsModule } from '@angular/forms';
           </span>
           
           <h1 class="font-serif text-4xl md:text-7xl font-bold text-white drop-shadow-lg leading-tight">
-            HAYALLERİNİZİN<br>
-            <span class="text-amber-400">YOL ARKADAŞI!</span>
+            {{ t().hero.title }}
           </h1>
           
           <p class="text-base md:text-xl text-white/95 max-w-3xl mx-auto font-medium drop-shadow-md leading-relaxed px-4">
-            Yüksekova'da araç kiralama deneyiminizi bambaşka bir boyuta taşıyoruz. Dağların arasında kaybolurken, şehrin kalabalığında yol alırken ya da iş seyahatinizde güvenin, rahatlığın ve konforun adresi yanınızda.
+            {{ t().hero.subtitle }}
           </p>
 
           <div class="pt-4">
               <button (click)="scrollToBooking()" class="bg-white text-slate-900 hover:bg-amber-500 hover:text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl transform hover:scale-105">
-                  Hemen Rezervasyon Yap
+                  {{ t().hero.cta }}
               </button>
           </div>
         </div>
@@ -55,9 +55,9 @@ import { FormsModule } from '@angular/forms';
                 
                 <!-- Hizmet Türü (Dropdown) -->
                 <div class="space-y-1 md:col-span-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Kiralama Türü</label>
+                    <label for="service-type" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Kiralama Türü</label>
                     <div class="relative">
-                        <select [(ngModel)]="serviceType" name="serviceType" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-3 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold appearance-none cursor-pointer">
+                        <select id="service-type" [(ngModel)]="serviceType" name="serviceType" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-3 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold appearance-none cursor-pointer">
                             <option value="individual">Bireysel (Şoförsüz)</option>
                             <option value="driver">Şoförlü Tahsis</option>
                         </select>
@@ -68,9 +68,9 @@ import { FormsModule } from '@angular/forms';
                 </div>
 
                 <div class="space-y-1 md:col-span-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Teslim Yeri</label>
+                    <label for="pickup-location" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Teslim Yeri</label>
                     <div class="relative">
-                        <select [(ngModel)]="pickupLocation" name="location" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-3 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold appearance-none cursor-pointer">
+                        <select id="pickup-location" [(ngModel)]="pickupLocation" name="location" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-3 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold appearance-none cursor-pointer">
                             <option value="merkez">Yüksekova Merkez</option>
                             <option value="havalimani">Selahaddin Eyyubi Hvl.</option>
                             <option value="otogar">Otogar</option>
@@ -81,12 +81,12 @@ import { FormsModule } from '@angular/forms';
                     </div>
                 </div>
                 <div class="space-y-1 md:col-span-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Alış Tarihi</label>
-                    <input type="date" [(ngModel)]="pickupDate" name="startDate" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-3 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold">
+                    <label for="pickup-date" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Alış Tarihi</label>
+                    <input id="pickup-date" type="date" [(ngModel)]="pickupDate" name="startDate" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-3 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold">
                 </div>
                 <div class="space-y-1 md:col-span-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Dönüş Tarihi</label>
-                    <input type="date" [(ngModel)]="returnDate" name="endDate" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-3 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold">
+                    <label for="return-date" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Dönüş Tarihi</label>
+                    <input id="return-date" type="date" [(ngModel)]="returnDate" name="endDate" class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-3 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-bold">
                 </div>
                 <div class="flex items-end md:col-span-1">
                     <button type="submit" class="w-full bg-slate-900 hover:bg-amber-500 hover:text-white text-white font-bold h-[46px] rounded-lg transition-all uppercase tracking-wider text-xs shadow-lg flex items-center justify-center">
@@ -143,6 +143,49 @@ import { FormsModule } from '@angular/forms';
                         </div>
                     </div>
                 }
+            </div>
+        </div>
+    </section>
+
+    <!-- Sales Teaser Section -->
+    <section class="py-16 bg-slate-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2071&auto=format&fit=crop')] bg-cover bg-center opacity-20"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-12">
+                <div class="md:w-1/2">
+                    <span class="text-amber-500 font-bold tracking-[0.3em] uppercase text-xs block mb-4">2. El Galeri</span>
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-6 leading-tight">Güvenilir Araç Sahibi Olun</h2>
+                    <p class="text-slate-300 text-lg mb-8 leading-relaxed">
+                        Ekspertiz garantili, bakımlı ve temiz ikinci el araçlarımızla hayalinizdeki arabaya kavuşun. Takas imkanı ve uygun ödeme seçenekleri sizi bekliyor.
+                    </p>
+                    <div class="flex gap-4">
+                        <a routerLink="/sales" class="bg-amber-500 text-slate-900 hover:bg-white hover:text-slate-900 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl transform hover:scale-105 inline-flex items-center">
+                            Satılık Araçları İncele
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <!-- Simple Stats or Visual -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+                            <div class="text-3xl font-bold text-amber-500 mb-1">100%</div>
+                            <div class="text-sm text-slate-300 font-bold uppercase">Ekspertiz Garantisi</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+                            <div class="text-3xl font-bold text-amber-500 mb-1">12 Ay</div>
+                            <div class="text-sm text-slate-300 font-bold uppercase">Mekanik Garanti</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+                            <div class="text-3xl font-bold text-amber-500 mb-1">Takas</div>
+                            <div class="text-sm text-slate-300 font-bold uppercase">Değerinde Alım</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10">
+                            <div class="text-3xl font-bold text-amber-500 mb-1">Kredi</div>
+                            <div class="text-sm text-slate-300 font-bold uppercase">Hızlı Finansman</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -329,7 +372,7 @@ import { FormsModule } from '@angular/forms';
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-             @for (tour of tours(); track tour.id) {
+             @for (tour of displayedTours(); track tour.id) {
                 <div class="bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 group border border-slate-100 overflow-hidden flex flex-col">
                    <div class="h-56 overflow-hidden relative">
                       <img [src]="tour.image" [alt]="tour.title" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
@@ -352,26 +395,45 @@ import { FormsModule } from '@angular/forms';
 
                       <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
                          <span class="text-2xl font-bold text-slate-900">{{tour.price}} ₺</span>
-                         <button (click)="bookTour(tour)" class="bg-slate-900 text-white hover:bg-amber-500 hover:text-slate-900 px-4 py-2 rounded font-bold text-xs uppercase tracking-wider transition-colors">
-                            Rezervasyon
+                         <button (click)="bookTour(tour)" aria-label="Rezervasyon Yap" class="bg-slate-900 text-white hover:bg-amber-500 hover:text-slate-900 px-4 py-2 rounded font-bold text-xs uppercase tracking-wider transition-colors">
+                            Rezervasyon Yap
                          </button>
                       </div>
                    </div>
                 </div>
              }
           </div>
+          
+          @if (tours().length > 3 && !showAllTours()) {
+              <div class="text-center mt-12">
+                  <button (click)="toggleTours()" class="bg-white border-2 border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white px-8 py-3 rounded-full font-bold transition-all uppercase tracking-widest text-sm">
+                      Tüm Turları Görüntüle
+                  </button>
+              </div>
+          }
        </div>
     </section>
   `
 })
 export class HomeComponent {
   carService = inject(CarService);
+  uiService = inject(UiService);
   router = inject(Router);
   rentCarFormSent = signal(false);
 
+  t = this.uiService.translations;
+
   // Signals
   tours = this.carService.getTours();
-  featuredCars = signal<Car[]>(this.carService.getCars()().filter(c => c.type === 'SUV' || c.type === 'Pickup' || c.brand === 'Volkswagen').slice(0, 3));
+  showAllTours = signal(false);
+  displayedTours = computed(() => {
+      return this.showAllTours() ? this.tours() : this.tours().slice(0, 3);
+  });
+  featuredCars = computed(() => this.carService.getCars()().filter(c => c.type === 'SUV' || c.type === 'Pickup' || c.brand === 'Volkswagen').slice(0, 3));
+
+  toggleTours() {
+      this.showAllTours.update(v => !v);
+  }
 
   // Booking Engine Signals
   pickupLocation = 'merkez';
@@ -399,10 +461,11 @@ export class HomeComponent {
     this.carService.setBookingRequest({
       type: 'TOUR',
       itemName: tour.title,
+      item: tour,
       image: tour.image,
-      price: tour.price
+      basePrice: tour.price
     });
-    this.router.navigate(['/contact']);
+    this.uiService.toggleContact(true);
   }
 
   rentCar(event: Event, car: Car) {
@@ -417,13 +480,33 @@ export class HomeComponent {
       endDate: this.returnDate
     };
     this.carService.setBookingRequest(request);
-    this.router.navigate(['/contact']);
+    this.uiService.toggleContact(true);
   }
 
   submitRentCarForm(event: Event) {
     event.preventDefault();
-    // Simulate file upload processing
-    this.rentCarFormSent.set(true);
+    
+    // Get form values (using direct DOM access for simplicity in this quick update, 
+    // ideally should use FormsModule or ReactiveForms but the template didn't have ngModel bindings)
+    const form = event.target as HTMLFormElement;
+    const name = (form.querySelector('input[type="text"]:nth-of-type(1)') as HTMLInputElement)?.value;
+    const phone = (form.querySelector('input[type="tel"]') as HTMLInputElement)?.value;
+    const carBrand = (form.querySelector('input[placeholder="Örn: VW Passat"]') as HTMLInputElement)?.value;
+    const modelYear = (form.querySelector('select') as HTMLSelectElement)?.value;
+    const km = (form.querySelector('input[type="number"]') as HTMLInputElement)?.value;
+    const description = (form.querySelector('textarea') as HTMLTextAreaElement)?.value;
+
+    if(name && phone && carBrand) {
+        this.carService.addPartnerRequest({
+            name,
+            phone,
+            carBrand,
+            modelYear: parseInt(modelYear),
+            km: parseInt(km),
+            description
+        });
+        this.rentCarFormSent.set(true);
+    }
   }
 
   scrollToBooking() {

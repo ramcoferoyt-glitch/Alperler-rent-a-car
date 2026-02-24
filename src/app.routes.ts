@@ -20,6 +20,8 @@ import { AdminCarsComponent } from './pages/admin/admin-cars.component';
 import { AdminReservationsComponent } from './pages/admin/admin-reservations.component';
 import { AdminBlogComponent } from './pages/admin/admin-blog.component';
 import { AdminSettingsComponent } from './pages/admin/admin-settings.component';
+import { AdminPartnerRequestsComponent } from './pages/admin/admin-partner-requests.component';
+import { AdminToursComponent } from './pages/admin/admin-tours.component';
 
 const adminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
@@ -55,7 +57,9 @@ export const routes: Routes = [
       { path: 'cars', component: AdminCarsComponent },
       { path: 'reservations', component: AdminReservationsComponent },
       { path: 'sales', component: AdminCarsComponent }, // Reusing cars component with tab logic
+      { path: 'tours', component: AdminToursComponent },
       { path: 'blog', component: AdminBlogComponent },
+      { path: 'partner-requests', component: AdminPartnerRequestsComponent },
       { path: 'settings', component: AdminSettingsComponent }
     ]
   },

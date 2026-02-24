@@ -2,7 +2,7 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CarService } from '../../services/car.service';
+import { CarService, FaqItem } from '../../services/car.service';
 import { SiteConfig } from '../../models/site-config.model';
 
 @Component({
@@ -89,6 +89,30 @@ import { SiteConfig } from '../../models/site-config.model';
               </div>
            </div>
 
+           <!-- FAQ Management -->
+           <div class="space-y-4">
+              <h3 class="font-bold text-lg border-b pb-2 text-slate-700">Sıkça Sorulan Sorular (SSS)</h3>
+              
+              <div class="space-y-4">
+                  @for (faq of faqs(); track faq.id) {
+                      <div class="bg-slate-50 p-4 rounded border border-slate-200">
+                          <input [(ngModel)]="faq.question" [ngModelOptions]="{standalone: true}" (change)="updateFaq(faq)" class="w-full font-bold bg-transparent border-b border-slate-300 mb-2 focus:outline-none focus:border-amber-500" placeholder="Soru">
+                          <textarea [(ngModel)]="faq.answer" [ngModelOptions]="{standalone: true}" (change)="updateFaq(faq)" rows="2" class="w-full bg-transparent text-sm text-slate-600 focus:outline-none" placeholder="Cevap"></textarea>
+                          <div class="text-right mt-2">
+                              <button type="button" (click)="deleteFaq(faq.id)" class="text-red-500 text-xs font-bold hover:underline">Sil</button>
+                          </div>
+                      </div>
+                  }
+              </div>
+
+              <div class="bg-slate-50 p-4 rounded border border-slate-200 border-dashed">
+                  <h4 class="font-bold text-sm text-slate-900 mb-2">Yeni Soru Ekle</h4>
+                  <input [(ngModel)]="newFaq.question" name="newQuestion" class="w-full p-2 bg-white border rounded mb-2 text-sm" placeholder="Soru">
+                  <textarea [(ngModel)]="newFaq.answer" name="newAnswer" rows="2" class="w-full p-2 bg-white border rounded mb-2 text-sm" placeholder="Cevap"></textarea>
+                  <button type="button" (click)="addFaq()" class="bg-slate-900 text-white px-4 py-2 rounded text-xs font-bold hover:bg-amber-500 hover:text-slate-900 transition-colors">Ekle</button>
+              </div>
+           </div>
+
            <button type="submit" class="w-full py-4 bg-slate-900 hover:bg-amber-500 hover:text-slate-900 text-white font-bold rounded-lg uppercase tracking-widest transition-colors shadow-lg text-sm">
                Ayarları Kaydet ve Yayınla
            </button>
@@ -100,9 +124,12 @@ import { SiteConfig } from '../../models/site-config.model';
 export class AdminSettingsComponent {
   carService = inject(CarService);
   currentConfig = this.carService.getConfig();
+  faqs = this.carService.getFaqs();
   
   formConfig: SiteConfig = { ...this.currentConfig() };
   saveSuccess = signal(false);
+  
+  newFaq: Partial<FaqItem> = {};
 
   constructor() {
     effect(() => {
@@ -116,5 +143,22 @@ export class AdminSettingsComponent {
       this.carService.updateConfig(this.formConfig);
       this.saveSuccess.set(true);
       setTimeout(() => this.saveSuccess.set(false), 3000);
+  }
+
+  addFaq() {
+      if(this.newFaq.question && this.newFaq.answer) {
+          this.carService.addFaq(this.newFaq as FaqItem);
+          this.newFaq = {};
+      }
+  }
+
+  deleteFaq(id: number) {
+      if(confirm('Silmek istediğinize emin misiniz?')) {
+          this.carService.deleteFaq(id);
+      }
+  }
+
+  updateFaq(faq: FaqItem) {
+      this.carService.addFaq(faq);
   }
 }

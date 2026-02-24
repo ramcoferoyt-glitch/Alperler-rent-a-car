@@ -2,13 +2,21 @@
 import { Component, inject } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { CarService } from '../services/car.service';
+import { UiService } from '../services/ui.service';
 
 @Component({
   selector: 'app-about',
   standalone: true,
   imports: [NgOptimizedImage],
   template: `
-    <div class="bg-white font-sans">
+    <div class="bg-white font-sans min-h-screen relative z-[60]">
+       
+       <!-- Close Button -->
+       <button (click)="close()" class="fixed top-6 right-6 z-50 bg-white/10 backdrop-blur-md hover:bg-white text-white hover:text-slate-900 rounded-full p-3 transition-all duration-300 shadow-lg border border-white/20 group">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Kapat</span>
+       </button>
+
        <!-- Header -->
        <div class="relative bg-slate-900 h-[500px] flex items-center justify-center overflow-hidden">
           <div class="absolute inset-0">
@@ -114,5 +122,10 @@ import { CarService } from '../services/car.service';
 })
 export class AboutComponent {
     carService = inject(CarService);
+    uiService = inject(UiService);
     config = this.carService.getConfig();
+
+    close() {
+        this.uiService.toggleAbout(false);
+    }
 }
