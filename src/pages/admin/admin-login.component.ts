@@ -1,6 +1,6 @@
 
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -8,14 +8,14 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-admin-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgOptimizedImage],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="min-h-screen flex font-sans bg-slate-100">
       
       <!-- Left Side: Branding (Hidden on mobile) -->
       <div class="hidden lg:flex lg:w-1/2 relative bg-slate-900 items-center justify-center overflow-hidden">
          <div class="absolute inset-0">
-            <img ngSrc="https://images.unsplash.com/photo-1485291571150-772bcfc10da5?q=80&w=1920&auto=format&fit=crop" fill priority alt="Admin Background" class="object-cover opacity-20">
+            <img src="https://images.unsplash.com/photo-1485291571150-772bcfc10da5?q=80&w=1920&auto=format&fit=crop" alt="Admin Background" class="object-cover w-full h-full opacity-20">
          </div>
          <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900/90 to-amber-900/20"></div>
          

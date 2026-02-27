@@ -7,6 +7,7 @@ export interface Car {
   fuel: 'Benzin' | 'Dizel' | 'Hibrit' | 'Elektrik';
   price: number;
   image: string;
+  images?: string[];
   seats: number;
   features: string[];
   isAvailable: boolean;

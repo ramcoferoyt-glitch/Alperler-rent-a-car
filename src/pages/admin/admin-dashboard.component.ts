@@ -1,13 +1,14 @@
 
-import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, computed, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CarService } from '../../services/car.service';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center animate-fade-in gap-4">
@@ -136,7 +137,7 @@ import { RouterLink } from '@angular/router';
     </div>
 
     <!-- Recent Activity -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
           <h3 class="font-bold text-slate-900">Son Rezervasyon Hareketleri</h3>
           <a routerLink="/admin/reservations" class="text-xs font-bold text-amber-600 hover:underline">Tümünü Gör</a>
@@ -175,6 +176,63 @@ import { RouterLink } from '@angular/router';
            </table>
        </div>
     </div>
+
+    <!-- Newsletter Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Subscribers -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 class="font-bold text-slate-900 mb-4 flex justify-between items-center">
+                <span>Bülten Aboneleri</span>
+                <span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">{{ subscribers().length }} Abone</span>
+            </h3>
+            <div class="max-h-60 overflow-y-auto mb-4">
+                <ul class="divide-y divide-slate-100">
+                    @for(sub of subscribers(); track sub) {
+                        <li class="py-2 text-sm text-slate-600 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            {{ sub }}
+                        </li>
+                    } @empty {
+                        <li class="py-4 text-center text-slate-400 text-sm">Henüz abone yok.</li>
+                    }
+                </ul>
+            </div>
+            
+            <div class="border-t border-slate-100 pt-4">
+                <h4 class="font-bold text-xs uppercase text-slate-500 mb-2">Toplu E-Posta Gönder</h4>
+                <textarea [(ngModel)]="campaignMessage" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm mb-2" placeholder="Kampanya mesajınız..."></textarea>
+                <button (click)="sendCampaign()" class="w-full bg-slate-900 text-white text-xs font-bold py-2 rounded hover:bg-amber-500 hover:text-slate-900 transition-colors">
+                    Tüm Abonelere Gönder
+                </button>
+            </div>
+        </div>
+
+        <!-- Notifications Log -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 class="font-bold text-slate-900 mb-4 flex justify-between items-center">
+                <span>Bildirim Geçmişi</span>
+                <button (click)="clearAllNotifications()" class="text-xs text-red-500 hover:text-red-700 font-bold">Tümünü Temizle</button>
+            </h3>
+            <div class="max-h-96 overflow-y-auto">
+                <ul class="space-y-4">
+                    @for(notif of notifications(); track notif.id) {
+                        <li class="bg-slate-50 p-3 rounded border border-slate-100 text-sm relative group">
+                            <button (click)="deleteNotification(notif.id)" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                            <div class="flex justify-between items-start mb-1 pr-6">
+                                <span class="font-bold text-slate-700">{{ notif.to }}</span>
+                                <span class="text-xs text-slate-400">{{ notif.date | date:'short' }}</span>
+                            </div>
+                            <p class="text-slate-600 text-xs">{{ notif.message }}</p>
+                        </li>
+                    } @empty {
+                        <li class="py-4 text-center text-slate-400 text-sm">Gönderilen bildirim yok.</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
   `
 })
 export class AdminDashboardComponent {
@@ -184,6 +242,8 @@ export class AdminDashboardComponent {
   cars = this.carService.getCars();
   saleCars = this.carService.getSaleCars();
   visitCount = this.carService.getVisitCount();
+  subscribers = this.carService.getSubscribers();
+  notifications = this.carService.getNotifications();
 
   reservationsCount = computed(() => this.reservations().length);
   
@@ -198,4 +258,36 @@ export class AdminDashboardComponent {
   totalCars = computed(() => this.cars().length + this.saleCars().length);
 
   recentReservations = computed(() => this.reservations().slice(0, 5));
+
+  campaignMessage = '';
+
+  sendCampaign() {
+      if (!this.campaignMessage) return;
+      
+      const subs = this.subscribers();
+      if (subs.length === 0) {
+          alert('Gönderilecek abone bulunmuyor.');
+          return;
+      }
+
+      // Simulate sending
+      subs.forEach(email => {
+          this.carService.sendNotification(email, `[BÜLTEN] ${this.campaignMessage}`);
+      });
+
+      alert(`Kampanya başarıyla ${subs.length} aboneye gönderildi!\n\nGönderilen Mesaj:\n"${this.campaignMessage}"\n\n(Simülasyon: Gerçek bir e-posta servisi entegre edildiğinde bu mesaj abonelerin e-posta adreslerine gidecektir.)`);
+      this.campaignMessage = '';
+  }
+
+  deleteNotification(id: number) {
+      if(confirm('Bu bildirimi silmek istediğinize emin misiniz?')) {
+          this.carService.deleteNotification(id);
+      }
+  }
+
+  clearAllNotifications() {
+      if(confirm('Tüm bildirim geçmişini silmek istediğinize emin misiniz?')) {
+          this.carService.clearAllNotifications();
+      }
+  }
 }

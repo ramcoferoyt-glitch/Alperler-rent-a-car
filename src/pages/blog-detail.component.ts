@@ -1,19 +1,19 @@
 
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CarService, BlogPost } from '../services/car.service';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgOptimizedImage],
+  imports: [CommonModule, RouterLink],
   template: `
     <div class="bg-white min-h-screen font-sans">
       @if (post()) {
         <!-- Hero Image -->
         <div class="relative h-[50vh] w-full">
-           <img [ngSrc]="post()!.image" fill priority [alt]="post()!.title" class="object-cover brightness-50">
+           <img [src]="post()!.image" [alt]="post()!.title" class="object-cover w-full h-full brightness-50">
            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent"></div>
            <div class="absolute bottom-0 left-0 w-full p-8 md:p-16">
               <div class="max-w-4xl mx-auto">

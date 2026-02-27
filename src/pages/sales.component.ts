@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarService, SaleCar } from '../services/car.service';
 import { Router } from '@angular/router';
+import { UiService } from '../services/ui.service';
 
 @Component({
   selector: 'app-sales',
@@ -13,9 +14,9 @@ import { Router } from '@angular/router';
       <!-- Header -->
       <div class="bg-slate-900 text-white py-12 mb-12">
          <div class="max-w-7xl mx-auto px-4 text-center">
-            <span class="text-amber-500 font-bold tracking-[0.3em] uppercase text-xs block mb-4">Araç Satış Bölümü</span>
-            <h1 class="font-serif text-4xl md:text-6xl font-bold">Güvenilir İkinci El</h1>
-            <p class="text-slate-400 mt-4 text-lg max-w-2xl mx-auto">Ekspertiz raporlu, garantili ve takas imkanlı araçlar.</p>
+            <span class="text-amber-500 font-bold tracking-[0.3em] uppercase text-xs block mb-4">{{ t().sales.badge }}</span>
+            <h1 class="font-serif text-4xl md:text-6xl font-bold">{{ t().sales.headerTitle }}</h1>
+            <p class="text-slate-400 mt-4 text-lg max-w-2xl mx-auto">{{ t().sales.headerSubtitle }}</p>
          </div>
       </div>
 
@@ -23,16 +24,16 @@ import { Router } from '@angular/router';
          <!-- Info Cards -->
          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 text-center">
              <div class="p-4 bg-slate-50 rounded border border-slate-100">
-                 <div class="font-bold text-slate-900">Güvenilir 2. El</div>
+                 <div class="font-bold text-slate-900">{{ t().sales.card1 }}</div>
              </div>
              <div class="p-4 bg-slate-50 rounded border border-slate-100">
-                 <div class="font-bold text-slate-900">Ekspertiz Raporu</div>
+                 <div class="font-bold text-slate-900">{{ t().sales.card2 }}</div>
              </div>
              <div class="p-4 bg-slate-50 rounded border border-slate-100">
-                 <div class="font-bold text-slate-900">Garanti Seçenekleri</div>
+                 <div class="font-bold text-slate-900">{{ t().sales.card3 }}</div>
              </div>
              <div class="p-4 bg-slate-50 rounded border border-slate-100">
-                 <div class="font-bold text-slate-900">Takas İmkanı</div>
+                 <div class="font-bold text-slate-900">{{ t().sales.card4 }}</div>
              </div>
          </div>
 
@@ -53,7 +54,7 @@ import { Router } from '@angular/router';
                   <div class="md:w-1/2 lg:w-2/5 relative h-72 md:h-auto overflow-hidden bg-slate-100">
                      <img [src]="car.image" [alt]="car.model" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
                      <div class="absolute top-4 left-4 bg-amber-500 text-slate-900 px-3 py-1 font-bold text-xs uppercase tracking-wider rounded-sm">
-                        Satılık
+                        {{ t().sales.status.forSale }}
                      </div>
                   </div>
                   
@@ -62,13 +63,13 @@ import { Router } from '@angular/router';
                      <div>
                         <div class="flex flex-wrap justify-between items-start mb-2">
                            <h3 class="text-2xl font-serif font-bold text-slate-900 mr-2">{{car.brand}} {{car.model}}</h3>
-                           <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-bold border border-slate-200">{{car.year}} Model</span>
+                           <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-bold border border-slate-200">{{car.year}} {{ t().car.year }}</span>
                         </div>
                         
                         <div class="flex flex-wrap gap-2 mb-4 text-xs font-bold text-slate-500">
                            <span class="bg-slate-50 px-2 py-1 rounded border">{{car.fuel}}</span>
                            <span class="bg-slate-50 px-2 py-1 rounded border">{{car.transmission}}</span>
-                           <span class="bg-slate-50 px-2 py-1 rounded border">{{car.km | number}} KM</span>
+                           <span class="bg-slate-50 px-2 py-1 rounded border">{{car.km | number}} {{ t().car.km }}</span>
                         </div>
 
                         <p class="text-slate-500 mb-4 leading-relaxed text-sm">{{car.description}}</p>
@@ -76,7 +77,7 @@ import { Router } from '@angular/router';
                         <!-- Expert Report Highlight -->
                         @if(car.expertReport) {
                            <div class="bg-amber-50 border-l-4 border-amber-500 p-3 mb-4">
-                              <span class="text-xs font-bold text-amber-600 uppercase block mb-1">Ekspertiz / Durum</span>
+                              <span class="text-xs font-bold text-amber-600 uppercase block mb-1">{{ t().sales.expert }}</span>
                               <span class="text-slate-800 font-medium text-sm">{{ car.expertReport }}</span>
                            </div>
                         }
@@ -95,11 +96,11 @@ import { Router } from '@angular/router';
                      <div class="flex flex-col sm:flex-row justify-between items-center pt-6 border-t border-slate-100 mt-4 gap-4">
                         <div class="text-3xl font-bold text-slate-900">{{car.price | number}} ₺</div>
                         <div class="flex gap-2 w-full sm:w-auto">
-                            <button (click)="inquireCar(car, 'MEET')" [attr.aria-label]="'Randevu Al: ' + car.brand + ' ' + car.model" class="flex-1 px-6 py-3 bg-white border-2 border-slate-900 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-slate-50 transition-colors">
-                                Randevu Al
+                            <button (click)="inquireCar(car, 'MEET')" [attr.aria-label]="t().sales.appointment + ': ' + car.brand + ' ' + car.model" class="flex-1 px-6 py-3 bg-white border-2 border-slate-900 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-slate-50 transition-colors">
+                                {{ t().sales.appointment }}
                             </button>
-                            <button (click)="inquireCar(car, 'INFO')" [attr.aria-label]="'Satın Al: ' + car.brand + ' ' + car.model" class="flex-1 px-6 py-3 bg-slate-900 text-white font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-amber-500 hover:text-slate-900 transition-colors">
-                                Satın Al
+                            <button (click)="inquireCar(car, 'INFO')" [attr.aria-label]="t().sales.buy + ': ' + car.brand + ' ' + car.model" class="flex-1 px-6 py-3 bg-slate-900 text-white font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-amber-500 hover:text-slate-900 transition-colors">
+                                {{ t().sales.buy }}
                             </button>
                         </div>
                      </div>
@@ -114,6 +115,8 @@ import { Router } from '@angular/router';
 export class SalesComponent {
   carService = inject(CarService);
   router = inject(Router);
+  uiService = inject(UiService);
+  t = this.uiService.translations;
   saleCars = this.carService.getSaleCars();
 
   toggleFav(id: number) {

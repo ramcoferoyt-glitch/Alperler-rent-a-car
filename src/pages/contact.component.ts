@@ -29,7 +29,10 @@ import { UiService } from '../services/ui.service';
                      <div class="font-serif font-bold text-xl text-slate-900">
                         {{ bookingData()?.type === 'RENTAL' ? 'GÜVENLİ ÖDEME & REZERVASYON' : 'TALEP OLUŞTURMA' }}
                      </div>
-                     <div class="w-20"></div> <!-- Spacer -->
+                     <!-- Close Button -->
+                     <button (click)="clearBooking()" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                     </button>
                  </div>
              </div>
 
@@ -50,6 +53,26 @@ import { UiService } from '../services/ui.service';
 
                            @if(bookingData()?.type === 'RENTAL') {
                                <div class="space-y-3 mb-6">
+                                   <!-- Rental Options -->
+                                   <div class="grid grid-cols-2 gap-2">
+                                       <div>
+                                           <label class="text-xs font-bold text-slate-500 uppercase">Kiralama Türü</label>
+                                           <select [(ngModel)]="rentalDuration" (change)="calculatePrice()" class="w-full bg-white border border-slate-200 rounded p-2 text-sm font-bold focus:ring-2 focus:ring-amber-500 outline-none">
+                                               <option value="hourly_6">Saatlik (6 Saat)</option>
+                                               <option value="hourly_12">Saatlik (12 Saat)</option>
+                                               <option value="daily">Günlük</option>
+                                               <option value="monthly">Aylık</option>
+                                               <option value="longterm">Uzun Dönem</option>
+                                           </select>
+                                       </div>
+                                       <div class="flex items-center justify-center bg-slate-100 rounded border border-slate-200">
+                                           <label class="flex items-center space-x-2 cursor-pointer p-2">
+                                               <input type="checkbox" [(ngModel)]="withDriver" (change)="calculatePrice()" class="form-checkbox h-4 w-4 text-amber-500 rounded focus:ring-amber-500">
+                                               <span class="text-sm font-bold text-slate-700">Şoförlü Hizmet</span>
+                                           </label>
+                                       </div>
+                                   </div>
+
                                    <div>
                                        <label class="text-xs font-bold text-slate-500 uppercase">Alış Tarihi</label>
                                        <input type="date" [(ngModel)]="startDate" (change)="calculatePrice()" class="w-full bg-white border border-slate-200 rounded p-2 text-sm font-bold focus:ring-2 focus:ring-amber-500 outline-none">
@@ -66,7 +89,13 @@ import { UiService } from '../services/ui.service';
                                </div>
                                <div class="flex justify-between items-center text-sm text-slate-600 mb-4">
                                    <span>Süre</span>
-                                   <span class="font-bold">{{ totalDays() }} Gün</span>
+                                   <span class="font-bold">
+                                       @if(rentalDuration.startsWith('hourly')) {
+                                           {{ rentalDuration === 'hourly_6' ? '6 Saat' : '12 Saat' }}
+                                       } @else {
+                                           {{ totalDays() }} Gün
+                                       }
+                                   </span>
                                </div>
                                <div class="border-t border-slate-200 pt-4 flex justify-between items-center">
                                    <span class="font-bold text-lg text-slate-900">Toplam Tutar</span>
@@ -113,19 +142,19 @@ import { UiService } from '../services/ui.service';
                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                                      <div class="space-y-2">
                                          <label for="name" class="text-xs font-bold text-slate-500 uppercase">Adınız <span class="text-red-500">*</span></label>
-                                         <input id="name" type="text" [(ngModel)]="formName" aria-label="Adınız" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Adınız">
+                                         <input id="name" type="text" [(ngModel)]="formName" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Örn: Ahmet">
                                      </div>
                                      <div class="space-y-2">
                                          <label for="surname" class="text-xs font-bold text-slate-500 uppercase">Soyadınız <span class="text-red-500">*</span></label>
-                                         <input id="surname" type="text" [(ngModel)]="formSurname" aria-label="Soyadınız" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Soyadınız">
+                                         <input id="surname" type="text" [(ngModel)]="formSurname" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Örn: Yılmaz">
                                      </div>
                                      <div class="space-y-2">
                                          <label for="phone" class="text-xs font-bold text-slate-500 uppercase">Telefon Numarası <span class="text-red-500">*</span></label>
-                                         <input id="phone" type="tel" [(ngModel)]="formPhone" aria-label="Telefon Numarası" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="05XX XXX XX XX">
+                                         <input id="phone" type="tel" [(ngModel)]="formPhone" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Örn: 0532 123 45 67">
                                      </div>
                                      <div class="space-y-2">
                                          <label for="email" class="text-xs font-bold text-slate-500 uppercase">E-Posta Adresi <span class="text-red-500">*</span></label>
-                                         <input id="email" type="email" [(ngModel)]="formEmail" aria-label="E-Posta Adresi" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="ornek@mail.com">
+                                         <input id="email" type="email" [(ngModel)]="formEmail" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all" placeholder="Örn: ahmet@ornek.com">
                                      </div>
                                  </div>
 
@@ -223,7 +252,7 @@ import { UiService } from '../services/ui.service';
                                      }
                                  </button>
                                  
-                                 <p class="text-center text-xs text-slate-400 mt-4">"Tamamla" butonuna basarak <span class="underline cursor-pointer">Mesafeli Satış Sözleşmesi</span>'ni kabul etmiş olursunuz.</p>
+                                 <p class="text-center text-xs text-slate-400 mt-4">"Tamamla" butonuna basarak <button (click)="openTerms()" class="underline cursor-pointer hover:text-slate-600 font-bold">Mesafeli Satış Sözleşmesi</button>'ni kabul etmiş olursunuz.</p>
                              </div>
                          }
                      </div>
@@ -331,6 +360,8 @@ export class ContactComponent implements OnInit {
   // Rental Logic
   startDate = '';
   endDate = '';
+  rentalDuration = 'daily'; // Default
+  withDriver = false;
   totalDays = signal(0);
   totalPrice = signal(0);
   paymentMethod = signal<'CREDIT_CARD' | 'EFT' | 'OFFICE'>('CREDIT_CARD');
@@ -340,12 +371,18 @@ export class ContactComponent implements OnInit {
   successMessage = signal('');
   bookingCode = signal('');
 
+  openTerms() {
+      this.uiService.openLegal('terms');
+  }
+
   ngOnInit() {
     const req = this.carService.getBookingRequest();
     if (req) {
       this.bookingData.set(req);
       if (req.startDate) this.startDate = req.startDate;
       if (req.endDate) this.endDate = req.endDate;
+      if (req.rentalDuration) this.rentalDuration = req.rentalDuration;
+      if (req.withDriver !== undefined) this.withDriver = req.withDriver;
       this.calculatePrice();
     }
   }
@@ -356,15 +393,50 @@ export class ContactComponent implements OnInit {
         const start = new Date(this.startDate);
         const end = new Date(this.endDate);
         const timeDiff = end.getTime() - start.getTime();
-        const days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        let days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        if (days < 1) days = 1; // Minimum 1 day/slot
         
-        if (days > 0) {
-            this.totalDays.set(days);
-            this.totalPrice.set(days * (req.basePrice || 0));
-        } else {
-            this.totalDays.set(0);
-            this.totalPrice.set(0);
+        // Hourly Logic Adjustment
+        let priceMultiplier = 1;
+        let durationLabel = `${days} Gün`;
+
+        if (this.rentalDuration.startsWith('hourly')) {
+            // Hourly rentals are typically same-day, so we treat base calculation as 1 unit of the "hourly rate"
+            // unless they span multiple days, which would be odd for "6 hours".
+            // We'll assume the user means "I want a 6-hour rental on this day".
+            days = 1; 
+            
+            if (this.rentalDuration === 'hourly_6') {
+                priceMultiplier = 0.4; // 40% of daily price (Updated to be more realistic for 6h)
+                durationLabel = '6 Saat';
+            }
+            if (this.rentalDuration === 'hourly_12') {
+                priceMultiplier = 0.7; // 70% of daily price
+                durationLabel = '12 Saat';
+            }
         }
+
+        // Driver Fee
+        const driverFee = this.withDriver ? 1500 : 0; // 1500 TL per day for driver
+
+        this.totalDays.set(days);
+        
+        // Base Price Calculation
+        // If hourly, basePrice * multiplier. If daily, basePrice * days.
+        let baseTotal = 0;
+        if (this.rentalDuration.startsWith('hourly')) {
+             baseTotal = (req.basePrice || 0) * priceMultiplier;
+        } else {
+             baseTotal = (req.basePrice || 0) * days;
+        }
+
+        // Add Driver Fee
+        const totalDriverFee = driverFee * days;
+        
+        this.totalPrice.set(baseTotal + totalDriverFee);
+
+        // Update UI Label (hacky but effective for this simple component)
+        // We'll use a signal or just rely on the template using rentalDuration to show text
     }
   }
 
@@ -403,7 +475,9 @@ export class ContactComponent implements OnInit {
             startDate: this.startDate,
             endDate: this.endDate,
             days: this.totalDays(),
-            totalPrice: this.totalPrice() || req.basePrice
+            totalPrice: this.totalPrice() || req.basePrice,
+            rentalDuration: this.rentalDuration,
+            withDriver: this.withDriver
         };
         
         // Save to Service

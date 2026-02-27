@@ -14,6 +14,14 @@ export class AuthService {
     if (storedAuth === 'true') {
       this._isLoggedIn.set(true);
     }
+    
+    // Initialize default credentials if not set
+    if (!localStorage.getItem('adminUser')) {
+        localStorage.setItem('adminUser', 'ishak595@gmail.com');
+    }
+    if (!localStorage.getItem('adminPass')) {
+        localStorage.setItem('adminPass', 'i4h4k5a2p7r7');
+    }
   }
 
   get isLoggedIn() {
@@ -30,17 +38,23 @@ export class AuthService {
     const cleanUser = username.trim().toLowerCase();
     const cleanPass = pass.trim();
 
-    // Credentials match the prompt requirements
-    const VALID_EMAIL = 'ishak595@gmail.com';
-    const VALID_PASS = 'i4h4k5a2p7r7';
+    // Get stored credentials
+    const validUser = localStorage.getItem('adminUser') || 'ishak595@gmail.com';
+    const validPass = localStorage.getItem('adminPass') || 'i4h4k5a2p7r7';
 
-    if (cleanUser === VALID_EMAIL && cleanPass === VALID_PASS) {
+    if (cleanUser === validUser && cleanPass === validPass) {
       this._isLoggedIn.set(true);
       localStorage.setItem('adminAuth', 'true');
       return true;
     }
     
     return false;
+  }
+
+  updateCredentials(newUser: string, newPass: string) {
+      localStorage.setItem('adminUser', newUser.trim().toLowerCase());
+      localStorage.setItem('adminPass', newPass.trim());
+      return true;
   }
 
   logout() {

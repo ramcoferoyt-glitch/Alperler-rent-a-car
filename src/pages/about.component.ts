@@ -1,18 +1,18 @@
 
 import { Component, inject } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { CarService } from '../services/car.service';
 import { UiService } from '../services/ui.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [NgOptimizedImage],
+  imports: [CommonModule],
   template: `
     <div class="bg-white font-sans min-h-screen relative z-[60]">
        
        <!-- Close Button -->
-       <button (click)="close()" class="fixed top-6 right-6 z-50 bg-white/10 backdrop-blur-md hover:bg-white text-white hover:text-slate-900 rounded-full p-3 transition-all duration-300 shadow-lg border border-white/20 group">
+       <button (click)="close()" class="fixed top-6 right-6 z-50 bg-slate-900 text-white hover:bg-amber-500 hover:text-slate-900 rounded-full p-3 transition-all duration-300 shadow-lg border border-white/20 group">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Kapat</span>
        </button>
@@ -20,7 +20,7 @@ import { UiService } from '../services/ui.service';
        <!-- Header -->
        <div class="relative bg-slate-900 h-[500px] flex items-center justify-center overflow-hidden">
           <div class="absolute inset-0">
-            <img ngSrc="https://picsum.photos/id/1018/1920/800" fill priority alt="Alperler Kurumsal" class="object-cover opacity-30">
+            <img src="https://picsum.photos/id/1018/1920/800" alt="Alperler Kurumsal" class="w-full h-full object-cover opacity-30">
           </div>
           <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-slate-900/90"></div>
           <div class="relative z-10 text-center px-4 animate-fade-in-up pt-20">
@@ -44,7 +44,7 @@ import { UiService } from '../services/ui.service';
           </div>
        </div>
 
-       <!-- Team Grid (Kept static as structure is specific, but could be dynamic later) -->
+       <!-- Team Grid -->
        <div class="bg-slate-50 py-24 border-t border-slate-200">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
              <div class="text-center mb-16">
@@ -54,65 +54,16 @@ import { UiService } from '../services/ui.service';
 
              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 
-                <!-- İshak Alper -->
-                <div class="bg-white p-8 rounded-sm shadow-lg border-t-4 border-slate-900 hover:border-amber-500 transition-all duration-300 text-center group">
-                   <div class="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
-                      <img ngSrc="https://picsum.photos/id/1062/200/200" width="200" height="200" alt="İshak Alper" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
-                   </div>
-                   <h3 class="font-bold text-2xl text-slate-900 font-serif">İshak Alper</h3>
-                   <p class="text-amber-600 text-xs uppercase font-bold tracking-widest mb-2">Kurucu & Yön. Krl. Bşk.</p>
-                   <p class="text-slate-500 text-sm">Pazarlama ve Strateji Dehası</p>
-                </div>
-
-                <!-- Hicran Alper -->
-                <div class="bg-white p-8 rounded-sm shadow-lg border-t-4 border-slate-900 hover:border-amber-500 transition-all duration-300 text-center group">
-                   <div class="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
-                      <img ngSrc="https://picsum.photos/id/338/200/200" width="200" height="200" alt="Hicran Alper" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
-                   </div>
-                   <h3 class="font-bold text-2xl text-slate-900 font-serif">Hicran Alper</h3>
-                   <p class="text-amber-600 text-xs uppercase font-bold tracking-widest mb-2">Genel Müdür</p>
-                   <p class="text-slate-500 text-sm">Finans ve İdari Yönetim</p>
-                </div>
-
-                <!-- Ferhat Alper -->
-                <div class="bg-white p-8 rounded-sm shadow-lg border-t-4 border-slate-900 hover:border-amber-500 transition-all duration-300 text-center group">
-                   <div class="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
-                      <img ngSrc="https://picsum.photos/id/203/200/200" width="200" height="200" alt="Ferhat Alper" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
-                   </div>
-                   <h3 class="font-bold text-2xl text-slate-900 font-serif">Ferhat Alper</h3>
-                   <p class="text-amber-600 text-xs uppercase font-bold tracking-widest mb-2">Kurucu Ortak</p>
-                   <p class="text-slate-500 text-sm">Saha Operasyon & Şoför</p>
-                </div>
-
-                <!-- Erkan Baykal -->
-                <div class="bg-white p-8 rounded-sm shadow-lg border-t-4 border-slate-900 hover:border-amber-500 transition-all duration-300 text-center group">
-                   <div class="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
-                      <img ngSrc="https://picsum.photos/id/1005/200/200" width="200" height="200" alt="Erkan Baykal" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
-                   </div>
-                   <h3 class="font-bold text-2xl text-slate-900 font-serif">Erkan Baykal</h3>
-                   <p class="text-amber-600 text-xs uppercase font-bold tracking-widest mb-2">Transfer Uzmanı</p>
-                   <p class="text-slate-500 text-sm">VIP Transfer & Kaptan Şoför</p>
-                </div>
-
-                 <!-- Selim Alper -->
-                 <div class="bg-white p-8 rounded-sm shadow-lg border-t-4 border-slate-900 hover:border-amber-500 transition-all duration-300 text-center group">
-                   <div class="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
-                      <img ngSrc="https://picsum.photos/id/60/200/200" width="200" height="200" alt="Selim Alper" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
-                   </div>
-                   <h3 class="font-bold text-2xl text-slate-900 font-serif">Selim Alper</h3>
-                   <p class="text-amber-600 text-xs uppercase font-bold tracking-widest mb-2">Teknik Sorumlu</p>
-                   <p class="text-slate-500 text-sm">Yazılım & Araç Ön Bakım</p>
-                </div>
-
-                <!-- İmran Alper -->
-                <div class="bg-white p-8 rounded-sm shadow-lg border-t-4 border-slate-900 hover:border-amber-500 transition-all duration-300 text-center group">
-                   <div class="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
-                      <img ngSrc="https://picsum.photos/id/91/200/200" width="200" height="200" alt="İmran Alper" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
-                   </div>
-                   <h3 class="font-bold text-2xl text-slate-900 font-serif">İmran Alper</h3>
-                   <p class="text-amber-600 text-xs uppercase font-bold tracking-widest mb-2">Müşteri İlişkileri</p>
-                   <p class="text-slate-500 text-sm">Rezervasyon & Transfer Şoförü</p>
-                </div>
+                @for(member of config().team; track member.id) {
+                    <div class="bg-white p-8 rounded-sm shadow-lg border-t-4 border-slate-900 hover:border-amber-500 transition-all duration-300 text-center group">
+                       <div class="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
+                          <img [src]="member.image" width="200" height="200" [alt]="member.name" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                       </div>
+                       <h3 class="font-bold text-2xl text-slate-900 font-serif">{{ member.name }}</h3>
+                       <p class="text-amber-600 text-xs uppercase font-bold tracking-widest mb-2">{{ member.role }}</p>
+                       <p class="text-slate-500 text-sm">{{ member.description }}</p>
+                    </div>
+                }
 
              </div>
           </div>

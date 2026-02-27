@@ -43,27 +43,82 @@
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.5);
     }
+
+    /* THEME OVERRIDES */
+    
+    /* Dark Theme */
+    body.theme-dark {
+        background-color: #0f172a !important;
+        color: #f8fafc !important;
+    }
+    body.theme-dark .bg-white {
+        background-color: #1e293b !important;
+        color: #f8fafc !important;
+    }
+    body.theme-dark .bg-slate-50 {
+        background-color: #0f172a !important;
+    }
+    body.theme-dark .text-slate-900 {
+        color: #f8fafc !important;
+    }
+    body.theme-dark .text-slate-600 {
+        color: #cbd5e1 !important;
+    }
+    body.theme-dark .border-slate-200 {
+        border-color: #334155 !important;
+    }
+
+    /* Luxury Theme (Black & Gold) */
+    body.theme-luxury {
+        background-color: #1c1917 !important; /* stone-900 */
+        color: #e7e5e4 !important;
+    }
+    body.theme-luxury .bg-slate-900 {
+        background-color: #0c0a09 !important; /* stone-950 */
+    }
+    body.theme-luxury .bg-white {
+        background-color: #292524 !important; /* stone-800 */
+        color: #e7e5e4 !important;
+    }
+    body.theme-luxury .bg-slate-50 {
+        background-color: #1c1917 !important;
+    }
+    body.theme-luxury .text-slate-900 {
+        color: #e7e5e4 !important;
+    }
+    body.theme-luxury .text-slate-600 {
+        color: #a8a29e !important; /* stone-400 */
+    }
+    body.theme-luxury .text-amber-500 {
+        color: #d4af37 !important; /* gold */
+    }
+    body.theme-luxury .bg-amber-500 {
+        background-color: #d4af37 !important;
+    }
+    body.theme-luxury .border-slate-200 {
+        border-color: #44403c !important; /* stone-700 */
+    }
+
+    /* Corporate Theme (Blue & White) */
+    body.theme-corporate {
+        background-color: #f0f9ff !important; /* sky-50 */
+        color: #0c4a6e !important; /* sky-900 */
+    }
+    body.theme-corporate .bg-slate-900 {
+        background-color: #0c4a6e !important; /* sky-900 */
+    }
+    body.theme-corporate .text-amber-500 {
+        color: #0284c7 !important; /* sky-600 */
+    }
+    body.theme-corporate .bg-amber-500 {
+        background-color: #0284c7 !important;
+    }
+    body.theme-corporate .text-slate-900 {
+        color: #0c4a6e !important;
+    }
   </style>
-<script type="importmap">
-{
-  "imports": {
-    "rxjs": "https://aistudiocdn.com/rxjs@^7.8.2?conditions=es2015",
-    "rxjs/operators": "https://aistudiocdn.com/rxjs@^7.8.2/operators?conditions=es2015",
-    "rxjs/ajax": "https://aistudiocdn.com/rxjs@^7.8.2/ajax?conditions=es2015",
-    "rxjs/webSocket": "https://aistudiocdn.com/rxjs@^7.8.2/webSocket?conditions=es2015",
-    "rxjs/testing": "https://aistudiocdn.com/rxjs@^7.8.2/testing?conditions=es2015",
-    "rxjs/fetch": "https://aistudiocdn.com/rxjs@^7.8.2/fetch?conditions=es2015",
-    "@angular/router": "https://next.esm.sh/@angular/router@^21.0.0?external=rxjs",
-    "@angular/platform-browser": "https://next.esm.sh/@angular/platform-browser@^21.0.0?external=rxjs",
-    "@angular/compiler": "https://next.esm.sh/@angular/compiler@^21.0.0?external=rxjs",
-    "@angular/core": "https://next.esm.sh/@angular/core@^21.0.0?external=rxjs",
-    "@google/genai": "https://next.esm.sh/@google/genai@^1.30.0?external=rxjs",
-    "@angular/common": "https://next.esm.sh/@angular/common@^21.0.0?external=rxjs",
-    "@angular/forms": "https://next.esm.sh/@angular/forms@^21.0.0?external=rxjs"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+
+
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-900 selection:text-white">
   <app-root></app-root>
